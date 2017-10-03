@@ -273,7 +273,7 @@ users table.
 
 _Alternate Flow:_
 
-      9.   System generates non-generic error and renders error page
+9.   System generates non-generic error and renders error page
 
 Update a User Account
 
@@ -295,7 +295,7 @@ users table and appends changes to log
 
 _Alternate Flow:_
 
-      10. System generates non-generic error and renders error page
+10. System generates non-generic error and renders error page
 
 Disable a User Account
 
@@ -318,7 +318,7 @@ users table and appends changes to log.
 
 _Alternate Flow:_
 
-      10. System generates non-generic error and renders error page
+10. System generates non-generic error and renders error page
 
 Update Product Attributes
 
@@ -343,7 +343,7 @@ users table and appends changes to log.
 
 _Alternate Flow:_
 
-    12.   System generates non-generic error and renders error page
+12. System generates non-generic error and renders error page
 
 ### 2.4 Constraints
 
