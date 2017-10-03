@@ -1,13 +1,4 @@
 # Warehouse Management System
-
-## Project Plan Document
-
-## CPSC-430: Writing Assignment 2
-
-### Dr. Anewalt
-
-### 09 October 2017
-
 Warehouse Group 2: Samantha Miller, Jacques Troussard, Taylor Dohmen
 
 ## Section 1: Introduction
@@ -32,10 +23,10 @@ the stakeholders.
 
 The document follows this terminology:
 
-●      &quot; **shall**&quot; indicates a hard requirement that shall be
+-  &quot;**SHALL**&quot; indicates a hard requirement that **SHALL** be
 implemented.
 
-●      &quot; **should**&quot; indicates a soft requirement that may be
+-  &quot;**SHOULD**&quot; indicates a soft requirement that may be
 implemented if time allows.
 
 ### 1.4 Document Overview
@@ -308,7 +299,7 @@ _Alternate Flow:_
 
 Disable a User Account
 
-Description: The inventory manager should be able to modify the access status to
+Description: The inventory manager **SHOULD** be able to modify the access status to
 the system of any user account of lesser privilege level.
 
 1. Manager logs into their account
