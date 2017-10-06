@@ -351,7 +351,11 @@ Performance, security, hardware, software, etc
 
 ## Section 3: Project Schedule
 
-### 3.1 Approach - Sam
+### 3.1 Approach
+
+The development team has constructed the project schedule by subdividing the requirements into milestones and deliverables.  These divisions of smallest shippable code can be packaged to the production environment and presented to the stakeholders for testing and feedback.  Once development and production environments have been established, the developers may begin working on the Product Import functionality and Search features.  Since these features will be the most used, and other facets of the site require their functionality, their completion should come first.  Then, there will be time for subsequent feedback, while other parts of the application are built.
+<br>
+Once the developers have created the core importing and searching functionalities, they may begin dependent tasks, including invoice generation and user account and session functionality for the application.  After these milestones have been delivered, the medium priority requirements are available, such as Customer Management and Metrics pages.  Once medium priority requirements have been addressed, the lowest priorities, including Invoice Search and more complex user account support may be implemented.
 
 ### 3.2 Milestones and Deliverables
 
@@ -490,5 +494,11 @@ This appendix lists each group member&#39;s document contributions.
   - Wrote Section 2.2 User Characteristics and requirements  2.3.1 through
     2.3.3.
   - Created System Documents B.1 and B.2.
+  
+- Jacques Troussard
+  - Wrote requirements 2.3.7 through 2.3.10
+  - Wrote Section 2.4 Constraints
+  - Created work breakdown graph
+
 
 
