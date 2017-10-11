@@ -25,4 +25,5 @@ def productsPage():
 
 # start the server
 if __name__ == '__main__':
+	#app.run( host='0.0.0.0', port=80, debug=True) #For prod environment
     app.run(host=os.getenv('IP', '0.0.0.0'), port =int(os.getenv('PORT', 8080)), debug=True)
