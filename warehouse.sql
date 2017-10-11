@@ -1,5 +1,4 @@
 DROP DATABASE IF EXISTS warehouse2;
-
 CREATE DATABASE warehouse2;
 \c warehouse2;
 
@@ -17,23 +16,22 @@ DROP TABLE IF EXISTS sold CASCADE;
 
 CREATE TABLE warehouses (
 	id serial NOT NULL PRIMARY KEY,
-	
+	associate TEXT NOT NULL
 	-- any other fields for this?
 );
 
 CREATE TABLE products (
-	id serial NOT NULL PRIMARY KEY,
-	name TEXT NOT NULL,
+	name TEXT NOT NULL PRIMARY KEY,
 	description TEXT,
 	price DECIMAL NOT NULL
 );
 
 CREATE TABLE inventory (
-	productid INTEGER NOT NULL,
+	product TEXT NOT NULL,
 	warehouseid INTEGER NOT NULL,
 	quantity INTEGER NOT NULL,
-	PRIMARY KEY (productid, warehouseid),
-	FOREIGN KEY (productid) REFERENCES products(id),
+	PRIMARY KEY (product, warehouseid),
+	FOREIGN KEY (product) REFERENCES products(name),
 	FOREIGN KEY (warehouseid) REFERENCES warehouses(id)
 );
 
@@ -52,7 +50,7 @@ CREATE TABLE customers (
 	address TEXT,
 	phone TEXT,
 	contact TEXT,
-	email text,
+	email text
 );
 
 CREATE TABLE sales (
@@ -66,13 +64,29 @@ CREATE TABLE sales (
 
 CREATE TABLE sold (
 	saleid INTEGER NOT NULL,
-	productid INTEGER NOT NULL,
+	product TEXT NOT NULL,
 	quantity INTEGER NOT NULL,
-	PRIMARY KEY (saleid, productid),
+	PRIMARY KEY (saleid, product),
 	FOREIGN KEY (saleid) REFERENCES sales(id),
-	FOREIGN KEY (productid) REFERENCES products(id)
+	FOREIGN KEY (product) REFERENCES products(name)
 );
 
 DROP ROLE IF EXISTS whmanager;
 CREATE USER whmanager WITH PASSWORD 'iurnf882jdkjop2';
 GRANT INSERT, SELECT, UPDATE ON warehouses, products, inventory, users, customers, sales, sold TO whmanager;
+
+
+INSERT INTO warehouses (associate) VALUES
+	('manager'),
+	('taylor'),
+	('samantha'),
+	('jacques')
+;
+
+-- INSERT INTO products (name, description, price) VALUES
+-- 	('oil', 'oil for the engine', 5.99),
+-- 	('wipers', 'a pair of windsheild wipers', 105.99),
+-- 	('headlight fluid', 'this is how headlights work promise', 54.99),
+-- 	('timing belt', 'it does something when it is in your car', 0.99),
+-- 	('radio', 'for da tunes', 5555.99)
+-- ;
