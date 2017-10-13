@@ -93,10 +93,3 @@ GRANT SELECT, UPDATE ON
 	customers_id_seq,
 	sales_id_seq
 TO whmanager;
-
-INSERT INTO warehouses (associate) VALUES
-	('manager'),
-	('taylor'),
-	('samantha'),
-	('jacques')
-;
