@@ -16,7 +16,10 @@ DROP TABLE IF EXISTS sold CASCADE;
 
 CREATE TABLE warehouses (
 	id serial NOT NULL PRIMARY KEY,
-	associate TEXT NOT NULL
+	associate TEXT,
+	tag_number TEXT, 
+	make TEXT,
+	model TEXT
 	-- any other fields for this?
 );
 
@@ -97,11 +100,3 @@ INSERT INTO warehouses (associate) VALUES
 	('samantha'),
 	('jacques')
 ;
-
--- INSERT INTO products (name, description, price) VALUES
--- 	('oil', 'oil for the engine', 5.99),
--- 	('wipers', 'a pair of windsheild wipers', 105.99),
--- 	('headlight fluid', 'this is how headlights work promise', 54.99),
--- 	('timing belt', 'it does something when it is in your car', 0.99),
--- 	('radio', 'for da tunes', 5555.99)
--- ;

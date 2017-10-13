@@ -1,6 +1,5 @@
 import psycopg2.extras
 import psycopg2
-from exceptions import *
 from db import *
 
 INVENTORYUPDATE = 'UPDATE inventory SET quantity = %s WHERE productid = %s AND warehouseid = %s;'
@@ -8,9 +7,14 @@ INVENTORYINSERT = 'INSERT INTO inventory (productid, warehouseid, quantity) VALU
 QUANTITY = 'SELECT quantity FROM inventory WHERE productid = %s AND warehouseid = %s;'
 PRODUCTINSERT = 'INSERT INTO products (name, description, price, pnumber) VALUES (%s, %s, %s, %s) RETURNING id;'
 LASTID = 'SELECT id FROM {0} ORDER BY id DESC LIMIT 1;'
+PNUMSELECT = 'SELECT pnumber FROM products;'
 
 NOWAREHOUSE = 'No warehouse with id {0}: Line {1}'
 NOPRODUCT = 'No product with id {0}: Line {1}'
+DUPLICATE = 'Product number {0} already exists'
+OVERDRAFT = 'Transfering more than warehouse has in stock: Line {0}'
+BADOP = 'Invalid operation: Line {0}'
+BADDATA = 'Improper data type at line {0}'
 
 def quantity(warehouseId, productId, cache, db):
 	cursor = db.cursor()
@@ -64,7 +68,7 @@ def transfer(db, data):
 	cursor.execute(query)
 
 
-def validate(line, data, lastProduct, lastWarehouse, db, cache):
+def validate(line, data, lastProduct, lastWarehouse, db, cache, pnums):
 	cursor = db.cursor()
 
 	if len(data) == 6:
@@ -73,8 +77,10 @@ def validate(line, data, lastProduct, lastWarehouse, db, cache):
 		data[3] = int(data[3])
 		data[4] = float(data[4])
 
+		if data[5] in pnums:
+			raise Exception(DUPLICATE.format(data[5]))
 		if data[0] > lastWarehouse:
-			raise InvalidID(NOWAREHOUSE.format(data[0], line))
+			raise Exception(NOWAREHOUSE.format(data[0], line))
 
 		lastProduct += 1
 		cache[(data[0], lastProduct)] = data[3]
@@ -83,9 +89,9 @@ def validate(line, data, lastProduct, lastWarehouse, db, cache):
 		data[:] = [int(d.strip()) for d in data]
 
 		if data[0] > lastWarehouse:
-			raise InvalidID(NOWAREHOUSE.format(data[0], line))
+			raise Exception(NOWAREHOUSE.format(data[0], line))
 		if data[1] > lastProduct:
-			raise InvalidID(NOPRODUCT.format(data[1], line))
+			raise Exception(NOPRODUCT.format(data[1], line))
 		
 		toQuant = quantity(data[0], data[1], cache, db)
 		cache[(data[0], data[1])] = toQuant + data[2]
@@ -93,24 +99,26 @@ def validate(line, data, lastProduct, lastWarehouse, db, cache):
 		data[:] = [int(d.strip()) for d in data]
 
 		if data[0] > lastWarehouse:
-			raise InvalidID(NOWAREHOUSE.format(data[0], line))
+			raise Exception(NOWAREHOUSE.format(data[0], line))
 		if data[1] > lastWarehouse:
-			raise InvalidID(NOWAREHOUSE.format(data[1], line))
+			raise Exception(NOWAREHOUSE.format(data[1], line))
 		if data[2] > lastProduct:
-			raise InvalidID(NOPRODUCT.format(data[2], line))
+			raise Exception(NOPRODUCT.format(data[2], line))
 
 		fromQuant = quantity(data[0], data[2], cache, db)
 		if data[3] > fromQuant:
-			raise InventoryOverdraft('Transfering more than warehouse has in stock: Line {0}'.format(line))
+			raise Exception(OVERDRAFT.format(line))
 
 		toQuant = quantity(data[1], data[2], cache, db)
 		cache[(data[0], data[2])] = fromQuant - data[3]
 		cache[(data[1], data[2])] = toQuant + data[3]
 	else:
-		raise InvalidOperation('Invalid operation: Line {0}'.format(line))
+		raise Exception(BADOP.format(line))
 
 
 # if operation B is dependent on operation A -> A should preceed B in the file
+# RETURNS LIST OF ERROR STRINGS IF UNSUCCESFULL
+# RETURNS None ON SUCCESS
 def processFile(csvName):
 	db = connect()
 	cursor = db.cursor()
@@ -126,15 +134,19 @@ def processFile(csvName):
 
 	csv = open(csvName, 'r').readlines()
 	csv = [(line + 1, csv[line].strip().split(',')) for line in range(len(csv)) if csv[line][0] not in ('#', '\n')]
+	
+	query = cursor.mogrify(PNUMSELECT);
+	cursor.execute(query)
+	pnums = [i[0] for i in cursor.fetchall()]
 	errors = []
 	cache = {}
 
 	for line, data in csv:
 		try:
-			lp = validate(line, data, lastProduct, lastWarehouse, db, cache)
+			lp = validate(line, data, lastProduct, lastWarehouse, db, cache, pnums)
 			lastProduct = lp if lp != None else lastProduct
 		except ValueError:
-			errors.append('Improper data type at line {0}'.format(line))
+			errors.append(BADDATA.format(line))
 		except Exception as e:
 			errors.append(str(e))
 	if errors:
@@ -146,10 +158,10 @@ def processFile(csvName):
 
 	for i in newProds:
 		newProduct(db, i)
-		db.commit()
+	db.commit()
 	for i in restocks:
 		restock(db, i)
-		db.commit()
+	db.commit()
 	for i in transfers:
 		transfer(db, i)
-		db.commit()
+	db.commit()
