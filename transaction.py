@@ -24,7 +24,7 @@ def quantity(warehouseId, productId, cache, db):
 	return temp[0] if temp != None else 0
 
 def newProduct(db, data):
-	cusor = db.cursor()
+	cursor = db.cursor()
 	toId, prodName, prodDesc, quantity, price, prodNum = data
 
 	query = cursor.mogrify(PRODUCTINSERT, (prodName, prodDesc, price, prodNum))
