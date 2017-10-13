@@ -21,17 +21,19 @@ CREATE TABLE warehouses (
 );
 
 CREATE TABLE products (
-	name TEXT NOT NULL PRIMARY KEY,
+	id serial NOT NULL PRIMARY KEY,
+	pnumber TEXT NOT NULL UNIQUE,
+	name TEXT NOT NULL,
 	description TEXT,
 	price DECIMAL NOT NULL
 );
 
 CREATE TABLE inventory (
-	product TEXT NOT NULL,
+	productid INTEGER NOT NULL,
 	warehouseid INTEGER NOT NULL,
 	quantity INTEGER NOT NULL,
-	PRIMARY KEY (product, warehouseid),
-	FOREIGN KEY (product) REFERENCES products(name),
+	PRIMARY KEY (productid, warehouseid),
+	FOREIGN KEY (productid) REFERENCES products(id),
 	FOREIGN KEY (warehouseid) REFERENCES warehouses(id)
 );
 
@@ -64,17 +66,30 @@ CREATE TABLE sales (
 
 CREATE TABLE sold (
 	saleid INTEGER NOT NULL,
-	product TEXT NOT NULL,
+	productid INTEGER NOT NULL,
 	quantity INTEGER NOT NULL,
-	PRIMARY KEY (saleid, product),
+	PRIMARY KEY (saleid, productid),
 	FOREIGN KEY (saleid) REFERENCES sales(id),
-	FOREIGN KEY (product) REFERENCES products(name)
+	FOREIGN KEY (productid) REFERENCES products(id)
 );
 
 DROP ROLE IF EXISTS whmanager;
 CREATE USER whmanager WITH PASSWORD 'iurnf882jdkjop2';
-GRANT INSERT, SELECT, UPDATE ON warehouses, products, inventory, users, customers, sales, sold TO whmanager;
-
+GRANT INSERT, SELECT, UPDATE ON 
+	warehouses,
+	products,
+	inventory,
+	users,
+	customers,
+	sales,
+	sold
+TO whmanager;
+GRANT SELECT, UPDATE ON
+	warehouses_id_seq,
+	products_id_seq,
+	customers_id_seq,
+	sales_id_seq
+TO whmanager;
 
 INSERT INTO warehouses (associate) VALUES
 	('manager'),
