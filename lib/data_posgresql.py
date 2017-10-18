@@ -1,5 +1,3 @@
-# Samantha Miller (smiller3)
-# CPSC-350:  Applications of Databases
 # Database access objects stored outside of controller.
 
 import psycopg2
@@ -77,51 +75,3 @@ def searchForProducts(productName, productNumber, warehouse):
 	#else if all are blank, return empty results.
 	conn.close()
 	return results
-
-# Creates a new user for TMS
-# def registerUser(firstName, lastName, password, email, club, region, wantsNews):
-#   conn = connectToPostgres()
-#   if conn == None:
-#     return None
-#   #crypt(%s, gen_salt('bf')) - use in later lecture?
-#   query_string = "INSERT INTO users (first_name, last_name, password, email, club, region, wants_news) VALUES (%s, %s, crypt(%s, gen_salt('bf')), %s, %s, %s, %s);"
-#   execute_query(query_string, conn, select=False,  args=(firstName, lastName, password, email, club, region, wantsNews))
-#   conn.close()
-  
-# # Returns a list of all users on the site
-# def listAllUsers():
-#   conn = connectToPostgres()
-#   if conn == None:
-#     return None
-#   query_string = "SELECT first_name, last_name, club, region from users;"
-#   results = execute_query(query_string, conn)
-#   conn.close()
-#   return results
-
-# # Returns a list of all users on the site, given an identifying email.
-# def listRegionUsers(email):
-#   conn = connectToPostgres()
-#   if conn == None:
-#     return None
-#   print(email)
-#   results = None
-#   query_string1 = "SELECT region from users WHERE email=%s;"
-#   selectedRegion = execute_query(query_string1, conn, args=(email,))
-#   if selectedRegion != None:
-#     print(selectedRegion)
-#     print(selectedRegion[0][0])
-#     query_string2 = "SELECT first_name, last_name, club, region from users where region=%s;"
-#     results = execute_query(query_string2, conn, args=(selectedRegion[0][0],))
-#   conn.close()
-#   return results
-
-# # Returns true if user is logged into site
-# def logIn(email, password):
-#   conn = connectToPostgres()
-#   if conn == None:
-#     return None
-#   query_string = "SELECT first_name, email from users where email=%s and password=crypt(%s, password);"
-#   results = execute_query(query_string, conn, args=(email, password))
-#   conn.close()
-#   return results
-  
