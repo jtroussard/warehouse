@@ -3,6 +3,7 @@ import uuid
 
 from lib.config import *
 from lib import data_posgresql as pg
+from lib.transaction import processFile
 from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
@@ -17,9 +18,14 @@ def mainIndex():
 @app.route('/import', methods=['GET', 'POST'])
 def importPage():
 	if request.method == 'GET':
-		return render_template('import.html')
-	print(open(request.form['csvfile']).readlines())
-	return render_template('index.html')
+		return render_template('import.html', post=False)
+	tmpfile = 'tmp.csv'
+	file = request.files['csvfile']
+	file.save(tmpfile)
+	result = processFile(tmpfile)
+	print(result)
+	os.remove(tmpfile)
+	return render_template('import.html', post=True, result=result)
 
 #Displays the Invoice page to create and displays invoices	
 @app.route('/invoice')

@@ -172,3 +172,4 @@ def processFile(csvName):
 		transfer(db, i)
 	db.commit()
 	db.close()
+	return errors

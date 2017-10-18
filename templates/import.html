@@ -1,13 +1,30 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container">
+<div class="container" style="margin-bottom: 15px">
   <div class="row">
     <div class="col-lg-12">
-      <h1 class="mt-5">Import</h1>
-      <p class="lead">Upload a csv file describing a transaction on warehouse inventory</p>
+      {% if post %}
+        {% if result|length > 0 %}
+          <h1 class="mt-5">Transaction Not Successfull...</h1>
+          <p class="lead">Fix the following errors and then re-upload your file below.</p>
+          <h2>Errors:</h2>
+          <ul class="list-group">
+            {% for error in result %}
+              <li class="list-group-item">{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <h1 class="mt-5">Transaction Successfull!</h1>
+          <p class="lead">Upload another file below.</p>
+        {% endif %}
+      {% else %}
+        <h1 class="mt-5">Import</h1>
+        <p class="lead">Upload a csv file describing a transaction on warehouse inventory</p>
+      {% endif %}
+      <br/>
       <form action="import" method="POST" enctype="multipart/form-data">
         <label class="btn btn-primary" for="file-selector">
-          <input name='csvfile' id="file-selector" type="file" style="display:none" onchange="$('#file').html(this.files[0].name);">Upload...
+          <input name="csvfile" id="file-selector" type="file" style="display:none" onchange="$('#file').html(this.files[0].name);">Upload...
         </label>
         <span class='label label-info' id="file"></span><br/> 
         <button class="btn btn-default" type="submit">Submit</button>
