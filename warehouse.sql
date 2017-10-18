@@ -1,5 +1,4 @@
 DROP DATABASE IF EXISTS warehouse2;
-
 CREATE DATABASE warehouse2;
 \c warehouse2;
 
@@ -17,15 +16,16 @@ DROP TABLE IF EXISTS sold CASCADE;
 
 CREATE TABLE warehouses (
 	id serial NOT NULL PRIMARY KEY,
-		tag_number TEXT, 
-		make TEXT,
-		model TEXT
+	associate TEXT,
+	tag_number TEXT, 
+	make TEXT,
+	model TEXT
 	-- any other fields for this?
 );
 
 CREATE TABLE products (
 	id serial NOT NULL PRIMARY KEY,
-	pnumber TEXT NOT NULL,
+	pnumber TEXT NOT NULL UNIQUE,
 	name TEXT NOT NULL,
 	description TEXT,
 	price DECIMAL NOT NULL
@@ -78,4 +78,18 @@ CREATE TABLE sold (
 
 DROP ROLE IF EXISTS whmanager;
 CREATE USER whmanager WITH PASSWORD 'iurnf882jdkjop2';
-GRANT INSERT, SELECT, UPDATE ON warehouses, products, inventory, users, customers, sales, sold TO whmanager;
+GRANT INSERT, SELECT, UPDATE ON 
+	warehouses,
+	products,
+	inventory,
+	users,
+	customers,
+	sales,
+	sold
+TO whmanager;
+GRANT SELECT, UPDATE ON
+	warehouses_id_seq,
+	products_id_seq,
+	customers_id_seq,
+	sales_id_seq
+TO whmanager;
