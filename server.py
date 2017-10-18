@@ -1,6 +1,11 @@
 import os
-from flask import Flask, render_template
+import uuid
+
+from lib.config import *
+from lib import data_posgresql as pg
+from flask import Flask, render_template, request, session
 app = Flask(__name__)
+#app.secret_key=os.urandom(24).encode('hex') #session variable
 
 #Root mapping
 @app.route('/')
@@ -18,9 +23,26 @@ def invoicePage():
 	return render_template('invoice.html')
 
 #Displays a Products page to search for the products the company offers.
-@app.route('/products')
+@app.route('/products', methods=['GET', 'POST'])
 def productsPage():
-	return render_template('products.html')
+	results = []
+	searchString = ""
+	isSearching = False
+	#if post, get info
+	if request.method == 'POST':
+		isSearching = True
+		pnumber = ""
+		pname = ""
+		warehouse = ""
+		if request.form.get("productNumber") != None:
+			pnumber=request.form['productNumber']
+		if request.form.get("productName") != None:
+			pname=request.form['productName']
+		if request.form.get("warehouse") != None:
+			warehouse=request.form['warehouse']
+		searchString = "empty string" if (pname + pnumber + warehouse == "") else (pnumber + " " + pname + " " + warehouse)
+		results = pg.searchForProducts(pname, pnumber, warehouse)
+	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString)
 
 
 # start the server

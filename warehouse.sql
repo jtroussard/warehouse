@@ -17,12 +17,15 @@ DROP TABLE IF EXISTS sold CASCADE;
 
 CREATE TABLE warehouses (
 	id serial NOT NULL PRIMARY KEY,
-	
+		tag_number TEXT, 
+		make TEXT,
+		model TEXT
 	-- any other fields for this?
 );
 
 CREATE TABLE products (
 	id serial NOT NULL PRIMARY KEY,
+	pnumber TEXT NOT NULL,
 	name TEXT NOT NULL,
 	description TEXT,
 	price DECIMAL NOT NULL
@@ -52,7 +55,7 @@ CREATE TABLE customers (
 	address TEXT,
 	phone TEXT,
 	contact TEXT,
-	email text,
+	email text
 );
 
 CREATE TABLE sales (

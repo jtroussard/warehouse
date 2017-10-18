@@ -1,29 +1,64 @@
 {% extends "layout.html" %} {% block content %}
 <div class="container">
   <div class="row">
-    <div class="col-lg-12">
+    <div class="col-sm-12">
       <h1 class="mt-5">Products</h1>
       <p class="lead">Add critieria to search for the location and product information on the warehouse's products.</p>
-      <form role="form" class="form-inline">
+      <form class="form-inline" method="POST" action="/products">
         <div class="row">
           <div class="form-group">
             <label class="col-sm-2" for="productNumber">Product Number</label>
-            <div class="col-sm-2"><input type="text" class="form-control" id="productNumber" placeholder="Product Number"></div>
+            <div class="col-sm-2"><input type="text" class="form-control" name="productNumber" id="productNumber" placeholder="Product Number" maxlength="25"></div>
           </div>
           <div class="form-group">
             <label class="col-sm-2" for="productName">Product Name</label>
-            <div class="col-sm-2"><input type="text" class="form-control" id="productName" placeholder="Product Name"></div>
+            <div class="col-sm-2"><input type="text" class="form-control" name="productName" id="productName" placeholder="Product Name" maxlength="25"></div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2" for="warehouse">Warehouse</label>
-            <div class="col-sm-2"><input type="text" class="form-control" id="warehouse" placeholder="Warehouse"></div>
+            <label class="col-sm-2" for="warehouse">Warehouse Id</label>
+            <div class="col-sm-2"><input type="number" class="form-control" name="warehouse" id="warehouse" placeholder="Warehouse" maxlength="5"></div>
           </div>
         </div>
         <div class="row">
-          <button type="submit" class="btn btn-primary pull-right">Submit</button>
+          <button type="submit" class="btn btn-primary pull-right col-sm-12">Search</button>
         </div>
       </form>
+    </div> <!-- end product search div-->
+  </div> <!--end div class="row"-->
+  <br>
+  <div>
+    {% if results != None and results|length > 0 and isSearching%}
+    <p>Product search <i>{{searchString}}</i> found below.</p>
+     <table class="table">
+        <thead>
+            <tr>
+                <th>Product Id</th>
+                <th>Product Number</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Warehouse</th>
+                <th>Tag Number</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for r in results %}
+              <tr>
+                  <td>{{r.id}}</td>
+                  <td>{{r.pnumber}}</td>
+                  <td>{{r.name}}</td>
+                  <td>{{r.price}}</td>
+                  <td>{{r.warehouseid}}</td>
+                  <td>{{r.tag_number}}</td>
+                  <td>{{r.quantity}}</td>
+              </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    {% if isSearching %}
+      <p>No matching records for <i>{{searchString}}</i>.</p>
+    {% endif %}
     </div>
-  </div>
-</div>
+</div> <!-- end div container-->
 {% endblock %}
