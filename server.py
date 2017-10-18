@@ -4,6 +4,7 @@ import uuid
 from lib.config import *
 from lib import data_posgresql as pg
 from flask import Flask, render_template, request, session
+
 app = Flask(__name__)
 #app.secret_key=os.urandom(24).encode('hex') #session variable
 
@@ -13,9 +14,12 @@ def mainIndex():
 	return render_template('index.html')
 	
 #Displays the Import page to import a document
-@app.route('/import')
+@app.route('/import', methods=['GET', 'POST'])
 def importPage():
-	return render_template('import.html')
+	if request.method == 'GET':
+		return render_template('import.html')
+	print(open(request.form['csvfile']).readlines())
+	return render_template('index.html')
 
 #Displays the Invoice page to create and displays invoices	
 @app.route('/invoice')
@@ -48,4 +52,5 @@ def productsPage():
 # start the server
 if __name__ == '__main__':
 	#app.run( host='0.0.0.0', port=80, debug=True) #For prod environment
-    app.run(host=os.getenv('IP', '0.0.0.0'), port =int(os.getenv('PORT', 8080)), debug=True)
+    app.run(host=os.getenv('IP', '0.0.0.0'), port = int(os.getenv('PORT', 8080)), debug=True)
+	
