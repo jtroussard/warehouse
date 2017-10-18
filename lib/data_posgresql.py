@@ -9,15 +9,15 @@ from lib.config import *
 # Returns a connection object if connection was successful, or None if can't connect.
 def connectToPostgres():
   connectionString = 'dbname=%s user=%s password=%s host=%s' % (POSTGRES_DATABASE, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST)
-  print connectionString
+  print (connectionString)
   # BP2  Use try-except blocks
   try:
     return psycopg2.connect(connectionString)
   except Exception as e:    # BP2 especially this part where you print the exception
   	print(type(e))
-	print(e)
-	print("Can't connect to database")
-	return None
+  	print(e)
+  	print("Can't connect to database")
+  	return None
 
 
 # generic execute statement
@@ -25,7 +25,7 @@ def connectToPostgres():
 #        False if it is an insert
 #
 def execute_query(query, conn, select=True, args=None):
-	print "in execute query"
+	print("in execute query")
 	cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 	results = None
 	try: 

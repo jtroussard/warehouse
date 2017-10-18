@@ -40,7 +40,15 @@ def productsPage():
 			pname=request.form['productName']
 		if request.form.get("warehouse") != None:
 			warehouse=request.form['warehouse']
-		searchString = "empty string" if (pname + pnumber + warehouse == "") else (pnumber + " " + pname + " " + warehouse)
+		#Concatinate search details
+		if pnumber != "":
+			searchString += "Product number: " + pnumber + " "
+		if pname != "":
+			searchString += "Product name: " + pname + " "
+		if warehouse != "":
+			searchString += "Warehouse: " + warehouse
+		if pname + pnumber + warehouse == "":
+			searchString = "empty string"
 		results = pg.searchForProducts(pname, pnumber, warehouse)
 	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString)
 
