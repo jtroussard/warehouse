@@ -56,7 +56,7 @@
         </tbody>
     </table>
     {% endif %}
-    {% if isSearching %}
+    {% if isSearching and results == None %}
       <p>No matching records for <i>{{searchString}}</i>.</p>
     {% endif %}
     </div>
