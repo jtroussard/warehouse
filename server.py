@@ -30,6 +30,20 @@ def importPage():
 #Displays the Invoice page to create and displays invoices	
 @app.route('/invoice')
 def invoicePage():
+	count = 0;
+	if request.method == 'GET':
+		count = pg.countRows("sales")
+		
+	return render_template('invoice.html', count=count)
+	
+#Displays the Invoice page to create and displays invoices	
+@app.route('/invCreate')
+def invCreatePage():
+	return render_template('invoice.html')
+	
+#Displays the Invoice page to create and displays invoices	
+@app.route('/invDisplay')
+def invDisplayPage():
 	return render_template('invoice.html')
 
 #Displays a Products page to search for the products the company offers.

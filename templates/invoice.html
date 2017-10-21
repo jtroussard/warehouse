@@ -1,13 +1,42 @@
-{% extends "layout.html" %}
-
+{% extends "layoutFA.html" %}
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-lg-12">
-      <h1 class="mt-5">Invoice</h1>
-      <p class="lead">Create or find a sales invoice.</p>
-      
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <h1 class="mt-5">Invoice</h1>
+        <p class="lead">Create or find a sales invoice.</p>
+      </div>
     </div>
-  </div>
-</div>
-{% endblock %}
+    
+    <div class="card-deck">
+      <div class="card"  >
+        <center style="margin-top: 15px">
+          <i class="fa fa-search" style="font-size: 70px"  aria-hidden="true"></i>
+        </center>
+        <div class="card-body">
+          <h4 class="card-title">Search Invoices</h4>
+          <p class="card-text">Select this option to search for an existing invoice. Current available search parameters are; Invoice Number.</p>
+          {% if count %}
+            <p class="card-text"><small class="text-muted">{{ count }} invoices currently on file.</small></p>
+          {% else %}
+            <p class="card-text"><small class="text-muted">0 invoices currently on file.</small></p>
+          {% endif %}
+          <a href="/invSearch" class="btn btn-primary">Search</a>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 5px">
+        <center style="margin-top: 15px">
+          <i class="fa fa-file-text" style="font-size: 70px" aria-hidden="true"></i>
+        </center>
+        <div class="card-body">
+          <h4 class="card-title">Create Invoice</h4>
+          <p class="card-text">Select this option to create a new invoice for both individual customers and businesses.</p>
+          <br>
+          <a href="/invSearch" class="btn btn-primary">Create</a>
+        </div>
+      </div>
+
+    </div>
+    </div><!-- END OF CONTAINER -->
+  {% endblock %}

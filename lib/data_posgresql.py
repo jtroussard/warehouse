@@ -75,3 +75,14 @@ def searchForProducts(productName, productNumber, warehouse):
 	#else if all are blank, return empty results.
 	conn.close()
 	return results
+	
+#Return int representing number of rows in table.
+def countRows(tableName):
+	conn = connectToPostgres()
+	if conn == None:
+		return None
+	result = None
+	query_string = "SELECT COUNT(*) FROM " + tableName;
+	result = execute_query(query_string, conn, select=True, args=None)
+	conn.close()
+	return result
