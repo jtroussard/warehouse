@@ -3,6 +3,7 @@ import uuid
 
 from lib.config import *
 from lib import data_posgresql as pg
+from lib import tools as tl
 from lib.transaction import processFile
 from flask import Flask, render_template, request, session
 
@@ -37,10 +38,20 @@ def invoicePage():
 	return render_template('invoice.html', count=count)
 	
 # Renders create invoice form/page
-@app.route('/invCreate')
+@app.route('/invCreate', methods=['GET', 'POST'])
 def invCreatePage():
-	entry = [{}]
+	invoiceData = [] # list of dictionaries
 	# Create new invoice (sale)
+	if request.method == 'POST':
+		# Debugging stuff
+		tl.printDict(request.form)
+		
+		# Multiple items not supported at this point
+		invoiceData.append({'customer':request.form['customer'], 
+		'seller':request.form['seller'], 'date':request.form['date'], 
+		'product':request.form['product'], 'qty':request.form['qty']})
+		pg.makeSale(invoiceData)
+		
 	return render_template('invCreate.html')
 	
 # Renders search invoice form/page 

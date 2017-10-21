@@ -93,3 +93,25 @@ GRANT SELECT, UPDATE ON
 	customers_id_seq,
 	sales_id_seq
 TO whmanager;
+
+/* Adding dummy sales person for db testing */
+INSERT INTO users VALUES (
+	't.stark@stark-international.com', 
+	'password', 
+	'Tony', 
+	'Stark', 
+	0
+);
+
+INSERT INTO customers VALUES (
+	0,
+	'George Washington'
+);
+
+INSERT INTO products VALUES (
+	0,
+	'sm-65484',
+	'Strange Liquid: Mechanic-in-a-Can',
+	'Fix anything. Pour in washer fluid reservoir. 8oz bottle',
+	9.99
+);
