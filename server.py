@@ -41,28 +41,6 @@ def invoicePage():
 def invCreatePage():
 	entry = [{}]
 	# Create new invoice (sale)
-	if request.method == 'POST':
-		entry.append('datesold': request.form['dateSold'], 'seller': request.form['seller'], 'customerid': request.form['customerid'])
-
-
-		warehouse = ""
-		if request.form.get("productNumber") != None:
-			pnumber=request.form['productNumber']
-		if request.form.get("productName") != None:
-			pname=request.form['productName']
-		if request.form.get("warehouse") != None:
-			warehouse=request.form['warehouse']
-		#Concatinate search details
-		if pnumber != "":
-			searchString += "Product number: " + pnumber + " "
-		if pname != "":
-			searchString += "Product name: " + pname + " "
-		if warehouse != "":
-			searchString += "Warehouse: " + warehouse
-		if pname + pnumber + warehouse == "":
-			searchString = "empty string"
-		results = pg.searchForProducts(pname, pnumber, warehouse)
-	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString)
 	return render_template('invCreate.html')
 	
 # Renders search invoice form/page 
