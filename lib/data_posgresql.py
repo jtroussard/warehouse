@@ -83,6 +83,8 @@ def countInvoices():
 		return None
 	result = 0
 	query_string = "SELECT COUNT(DISTINCT saleid) FROM sold";
-	result = execute_query(query_string, conn, select=True, args=None)
+	results = execute_query(query_string, conn, select=True, args=None)
 	conn.close()
-	return result
+	for k, v in results.items():
+		print("{} - {}".format(k,v))
+	return results
