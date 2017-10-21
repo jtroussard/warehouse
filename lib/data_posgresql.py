@@ -81,7 +81,7 @@ def countInvoices():
 	conn = connectToPostgres()
 	if conn == None:
 		return None
-	result = None
+	result = 0
 	query_string = "SELECT COUNT(DISTINCT saleid) FROM sold";
 	result = execute_query(query_string, conn, select=True, args=None)
 	conn.close()
