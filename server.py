@@ -31,20 +31,44 @@ def importPage():
 @app.route('/invoice')
 def invoicePage():
 	count = 0;
+	# 
 	if request.method == 'GET':
-		count = pg.countRows("sales")
-		
+		count = pg.countInvoices()
 	return render_template('invoice.html', count=count)
 	
-#Displays the Invoice page to create and displays invoices	
+# Renders create invoice form/page
 @app.route('/invCreate')
 def invCreatePage():
-	return render_template('invoice.html')
+	entry = [{}]
+	# Create new invoice (sale)
+	if request.method == 'POST':
+		entry.append('datesold': request.form['dateSold'], 'seller': request.form['seller'], 'customerid': request.form['customerid'])
+
+
+		warehouse = ""
+		if request.form.get("productNumber") != None:
+			pnumber=request.form['productNumber']
+		if request.form.get("productName") != None:
+			pname=request.form['productName']
+		if request.form.get("warehouse") != None:
+			warehouse=request.form['warehouse']
+		#Concatinate search details
+		if pnumber != "":
+			searchString += "Product number: " + pnumber + " "
+		if pname != "":
+			searchString += "Product name: " + pname + " "
+		if warehouse != "":
+			searchString += "Warehouse: " + warehouse
+		if pname + pnumber + warehouse == "":
+			searchString = "empty string"
+		results = pg.searchForProducts(pname, pnumber, warehouse)
+	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString)
+	return render_template('invCreate.html')
 	
-#Displays the Invoice page to create and displays invoices	
+# Renders search invoice form/page 
 @app.route('/invDisplay')
 def invDisplayPage():
-	return render_template('invoice.html')
+	return render_template('invSearch.html')
 
 #Displays a Products page to search for the products the company offers.
 @app.route('/products', methods=['GET', 'POST'])

@@ -77,12 +77,12 @@ def searchForProducts(productName, productNumber, warehouse):
 	return results
 	
 #Return int representing number of rows in table.
-def countRows(tableName):
+def countInvoices():
 	conn = connectToPostgres()
 	if conn == None:
 		return None
 	result = None
-	query_string = "SELECT COUNT(*) FROM " + tableName;
+	query_string = "SELECT COUNT(DISTINCT saleid) FROM sold";
 	result = execute_query(query_string, conn, select=True, args=None)
 	conn.close()
 	return result
