@@ -102,17 +102,25 @@ def makeSale(invoiceData):
 		
 	# Format/Type check data
 	# TODO
-	print(invoiceData)
+	
+	# Get product id
+	# This is part of function testing and should not remain in final code
+	# This should be handled via format checking later on
+	productName = invoiceData[0]['product']
+	query_string = "SELECT id FROM products WHERE pnumber = %s;"
+	results = execute_query(query_string, conn, select=True, args=(productName,))
+	if results:
+		productid = results[0][0]
 
-	# Insert sale row
+	# Insert sale row - select set as true for returning id
 	saleData = [invoiceData[0]['date'], invoiceData[0]['seller'], invoiceData[0]['customer']]
-	query_string = "INSERT INTO sales (datesold, seller, customerid) VALUES (%s, %s, %s) RETURNING id AS invoiceNumber;"
-    # Setting select as true for returning value
+	query_string = "INSERT INTO sales (datesold, seller, customerid) VALUES (%s, %s, %s) RETURNING id;"
 	results = execute_query(query_string, conn, select=True, args=(tuple(saleData)))
+	invoiceNumber = results[0][0]
 	
 	# Insert sold row
-	soldData = [invoiceData[0]['product'], invoiceData[0]['qty']]
-	query_string = "INSERT INTO sold (product, qty) VALUES (%s, %s);"
+	soldData = [invoiceNumber, productid, invoiceData[0]['qty']]
+	query_string = "INSERT INTO sold (saleid, productid, quantity) VALUES (%s, %s, %s);"
 	results = execute_query(query_string, conn, select=False, args=(tuple(soldData)))
 	
 	# Clean up
