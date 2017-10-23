@@ -6,11 +6,11 @@ __author__     = "Jacques Troussard"
 __date__       = "10/21/2017"
 __version__    = "0.0.0"
 
-# Insert sales record into DB (via approperaite tables)
+# Print python dictionary
 def printDict(d):
 	# Type check
 	print(type(d))
 	
 	# Print
 	for k,v in d.items():
-		print ("k: {}, d: {}".format(k,v))
+		print ("k: {}, v: {}".format(k,v))
