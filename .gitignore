@@ -1,4 +1,4 @@
-# Ignore files while they are still open
+# Ignore vim recovery files
 *.swp
 
 # Ignore compiled files
