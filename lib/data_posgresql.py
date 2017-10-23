@@ -106,12 +106,13 @@ def makeSale(invoiceData):
 
 	# Insert sale row
 	saleData = [invoiceData[0]['date'], invoiceData[0]['seller'], invoiceData[0]['customer']]
-	query_string = "INSERT INTO sales (datesold, seller, customerid) VALUES
-(%s, %s, %s) RETURNING id AS invoiceNumber;"; results = execute_query(query_string, conn, select=False, args=(tuple(saleData)))
+    query_string = "INSERT INTO sales (datesold, seller, customerid) VALUES
+(%s, %s, %s) RETURNING id AS invoiceNumber;"
+    results = execute_query(query_string, conn, select=False, args=(tuple(saleData)))
 	
 	# Insert sold row
 	soldData = [invoiceData[0]['product'], invoiceData[0]['qty']]
-	query_string = "INSERT INTO sold (product, qty) VALUES (%s, %s);";
+	query_string = "INSERT INTO sold (product, qty) VALUES (%s, %s);"
 	results = execute_query(query_string, conn, select=False, args=(tuple(soldData)))
 	
 	# Clean up
