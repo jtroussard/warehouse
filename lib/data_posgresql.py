@@ -52,25 +52,25 @@ def searchForProducts(productName, productNumber, warehouse):
 	results = None
 	query_string = "SELECT p.id, p.pnumber, p.name, p.price, i.warehouseid, w.tag_number, i.quantity from inventory i join products p on i.productid = p.id join warehouses w on i.warehouseid=w.id WHERE "
 	if (productName != "" and productNumber != "" and warehouse != ""):  #1 name, number, and warehouse
-		query_string += "lower(p.name) like lower(%s) AND lower(p.pnumber)=lower(%s) AND i.warehouseid=%s;"
+		query_string += "lower(p.name) like lower(%s) AND lower(p.pnumber)=lower(%s) AND i.warehouseid=%s ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productName, productNumber, warehouse,))
 	elif (productName != "" and productNumber != "" and warehouse == ""): #2 name, number
-		query_string += "lower(p.name) like lower(%s) AND lower(p.pnumber)=lower(%s);"
+		query_string += "lower(p.name) like lower(%s) AND lower(p.pnumber)=lower(%s) ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productName, productNumber,))
 	elif (productName == "" and productNumber != "" and warehouse != ""): #3 number, warehouse
-		query_string += "lower(p.pnumber)=(%s) AND i.warehouseid=%s;"
+		query_string += "lower(p.pnumber)=(%s) AND i.warehouseid=%s ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productNumber, warehouse,))
 	elif (productName != "" and productNumber == "" and warehouse != ""):  #4 name, warehouse
-		query_string += "lower(p.name) like lower(%s) AND i.warehouseid=%s;"
+		query_string += "lower(p.name) like lower(%s) AND i.warehouseid=%s ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productName, warehouse,))
 	elif (productName != "" and productNumber == "" and warehouse == ""):  #5 name
-		query_string += "lower(p.name) like lower(%s);"
+		query_string += "lower(p.name) like lower(%s) ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productName,))
 	elif (productName == "" and productNumber != "" and warehouse == ""):  #6 number
-		query_string += "lower(p.pnumber)=lower(%s);"
+		query_string += "lower(p.pnumber)=lower(%s) ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productNumber,))
 	elif (productName == "" and productNumber == "" and warehouse != ""):  #7 warehouse
-		query_string += "i.warehouseid=%s;"
+		query_string += "i.warehouseid=%s ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(warehouse,))
 	#else if all are blank, return empty results.
 	conn.close()
