@@ -1,36 +1,72 @@
-{% extends "layout.html" %}
-{% block content %}
+{% extends "layout.html" %} {% block content %}
 <div class="container" style="margin-bottom: 15px">
   <div class="row">
     <div class="col-lg-12">
-      {% if post %}
-        {% if result|length > 0 %}
-          <h1 class="mt-5">Transaction Not Successfull...</h1>
-          <p class="lead">Fix the following errors and then re-upload your file below.</p>
-          <h2>Errors:</h2>
-          <ul class="list-group">
-            {% for error in result %}
-              <li class="list-group-item">{{ error }}</li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <h1 class="mt-5">Transaction Successfull!</h1>
-          <p class="lead">Upload another file below.</p>
-        {% endif %}
+      {% if post %} {% if result|length > 0 %}
+      <h1 class="mt-5">Transaction Not Successfull...</h1>
+      <p class="lead">Fix the following errors and then re-upload your file below.</p>
+      <h2>Errors:</h2>
+      <ul class="list-group">
+        {% for error in result %}
+        <li class="list-group-item">{{ error }}</li>
+        {% endfor %}
+      </ul>
       {% else %}
-        <h1 class="mt-5">Import</h1>
-        <p class="lead">Upload a csv file describing a transaction on warehouse inventory</p>
+      <h1 class="mt-5">Transaction Successfull!</h1>
+      <p class="lead">Upload another file below.</p>
+      {% endif %} {% else %}
+      <h1 class="mt-5">Import</h1>
+      <p class="lead">Upload a csv file describing a transaction on warehouse inventory</p>
       {% endif %}
       <br/>
       <form action="import" method="POST" enctype="multipart/form-data">
         <label class="btn btn-primary" for="file-selector">
-          <input name="csvfile" id="file-selector" type="file" style="display:none" onchange="$('#file').html(this.files[0].name);">Upload...
+          <input name="csvfile" id="file-selector" required="required" type="file" style="display:none" onchange="$('#file').html(this.files[0].name);">Browse...
         </label>
-        <span class='label label-info' id="file"></span><br/> 
-        <button class="btn btn-default" type="submit">Submit</button>
+        <span class='label label-info' id="file"></span>
+        <br/>
+        <button class="btn btn-default" type="submit">Upload</button>
         <button class="btn btn-default" type="reset" onclick="$('#file').html('');">Cancel</button>
       </form>
+      <br/>
+      <div class="panel-group" id="accordion">
+        <div class="pane panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion" href="#example">
+                Example Operations (click to expand)
+              </a>
+            </h3>
+          </div>
+          <div class="panel-collapse collapse in" id="example">
+            <div class="panel-body">
+              <b>Inputting new products</b>
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <b>Format: </b>toId, prodName, prodDesc, quant, price, serialNo</li>
+                <li class="list-group-item">
+                  <b>Example: </b>1, oil, oil for the engine, 100, 5.99, 1</li>
+              </ul>
+              <br/>
+              <b>Transfering products between warehouses</b>
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <b>Format: </b>fromId, toId, prodId, quant</li>
+                <li class="list-group-item">
+                  <b>Example: </b>1, 3, 2, 1</li>
+              </ul>
+              <br/>
+              <b>Restocking existing products</b>
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <b>Format: </b>toId, prodId, quant</li>
+                <li class="list-group-item">
+                  <b>Example: </b>1, 1, 100</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-{% endblock %}
+  {% endblock %}
