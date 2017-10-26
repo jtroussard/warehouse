@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <h1 class="mt-5">Create Invoice</h1>
+        <p class="lead">Here you can create an invoice. Enter all necessary fields</p>
+      </div>
+    </div>
+    
+    <form method="POST" action="/invCreate">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="validationDefault01">Customer ID</label>
+          <input type="text" class="form-control" id="customer" name="customer" placeholder="" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="validationDefault02">Seller</label>
+          <input type="text" class="form-control" id="seller" name="seller" placeholder="" required>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 mb-3">
+          <label for="validationDefault03">Date</label>
+          <input type="text" class="form-control" id="date" name="date" placeholder="" required>
+          <div class="invalid-feedback">
+            Please provide the date of sale.
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="validationDefault04">Product ID</label>
+          <input type="text" class="form-control" id="product" name="product" placeholder="" required>
+          <div class="invalid-feedback">
+            Please provide product part number.
+          </div>
+        </div>
+        <div class="col-md-3 mb-3">
+          <label for="validationDefault05">Qty</label>
+          <input type="number" class="form-control" id="qty" name="qty" placeholder="" required>
+          <div class="invalid-feedback">
+            Please provide quantity.
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    </div><!-- END OF CONTAINER -->
+  {% endblock %}
+

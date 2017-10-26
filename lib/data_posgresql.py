@@ -2,6 +2,7 @@
 
 import psycopg2
 import psycopg2.extras
+from lib import tools as tl
 
 from lib.config import *
 
@@ -75,3 +76,53 @@ def searchForProducts(productName, productNumber, warehouse):
 	#else if all are blank, return empty results.
 	conn.close()
 	return results
+	
+# Return int representing number of rows in table.
+def countInvoices():
+	conn = connectToPostgres()
+	if conn == None:
+		return None
+	query_string = "SELECT COUNT(DISTINCT saleid) FROM sold";
+	results = execute_query(query_string, conn, select=True, args=None)
+	conn.close()
+	results = results[0][0]
+	return results
+	
+# Return list of sellers - NOT FINISHED
+def getSellers():
+	conn = connectToPostgres()
+	if conn == None:
+		return None
+	
+# Insert sales record into DB (via approperaite tables)
+def makeSale(invoiceData):
+	conn = connectToPostgres()
+	if conn == None:
+		return None
+		
+	# Format/Type check data
+	# TODO
+	
+	# Get product id
+	# This is part of function testing and should not remain in final code
+	# This should be handled via format checking later on
+	productName = invoiceData[0]['product']
+	query_string = "SELECT id FROM products WHERE pnumber = %s;"
+	results = execute_query(query_string, conn, select=True, args=(productName,))
+	if results:
+		productid = results[0][0]
+
+	# Insert sale row - select set as true for returning id
+	saleData = [invoiceData[0]['date'], invoiceData[0]['seller'], invoiceData[0]['customer']]
+	query_string = "INSERT INTO sales (datesold, seller, customerid) VALUES (%s, %s, %s) RETURNING id;"
+	results = execute_query(query_string, conn, select=True, args=(tuple(saleData)))
+	invoiceNumber = results[0][0]
+	
+	# Insert sold row
+	soldData = [invoiceNumber, productid, invoiceData[0]['qty']]
+	query_string = "INSERT INTO sold (saleid, productid, quantity) VALUES (%s, %s, %s);"
+	results = execute_query(query_string, conn, select=False, args=(tuple(soldData)))
+	
+	# Clean up
+	conn.close()
+	print(results)

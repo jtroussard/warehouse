@@ -1,6 +1,6 @@
 import psycopg2.extras
 import psycopg2
-from db import *
+from lib.data_posgresql import connectToPostgres
 
 INVENTORYUPDATE = 'UPDATE inventory SET quantity = %s WHERE productid = %s AND warehouseid = %s;'
 INVENTORYINSERT = 'INSERT INTO inventory (productid, warehouseid, quantity) VALUES (%s, %s, %s);'
@@ -25,6 +25,7 @@ def quantity(warehouseId, productId, cache, db):
 	cursor.execute(query)
 
 	temp = cursor.fetchone()
+	cursor.close()
 	return temp[0] if temp != None else 0
 
 def newProduct(db, data):
@@ -38,6 +39,7 @@ def newProduct(db, data):
 
 	query = cursor.mogrify(INVENTORYINSERT, (prodId, toId, quantity))
 	cursor.execute(query)
+	cursor.close()
 
 def restock(db, data):
 	cursor = db.cursor()
@@ -45,6 +47,7 @@ def restock(db, data):
 
 	query = cursor.mogrify(INVENTORYUPDATE, (product, toId, quantity))
 	cursor.execute(query)
+	cursor.close()
 
 def transfer(db, data):
 	cursor = db.cursor()
@@ -66,6 +69,7 @@ def transfer(db, data):
 	else:
 		query = cursor.mogrify(INVENTORYINSERT, (product, toId, transferQuant))
 	cursor.execute(query)
+	cursor.close()
 
 
 def validate(line, data, lastProduct, lastWarehouse, db, cache, pnums):
@@ -114,13 +118,14 @@ def validate(line, data, lastProduct, lastWarehouse, db, cache, pnums):
 		cache[(data[1], data[2])] = toQuant + data[3]
 	else:
 		raise Exception(BADOP.format(line))
+	cursor.close()
 
 
 # if operation B is dependent on operation A -> A should preceed B in the file
 # RETURNS LIST OF ERROR STRINGS IF UNSUCCESFULL
 # RETURNS None ON SUCCESS
 def processFile(csvName):
-	db = connect()
+	db = connectToPostgres()
 	cursor = db.cursor()
 
 	query = cursor.mogrify(LASTID.format('warehouses'))
@@ -138,6 +143,7 @@ def processFile(csvName):
 	query = cursor.mogrify(PNUMSELECT);
 	cursor.execute(query)
 	pnums = [i[0] for i in cursor.fetchall()]
+	cursor.close()
 	errors = []
 	cache = {}
 
@@ -165,3 +171,5 @@ def processFile(csvName):
 	for i in transfers:
 		transfer(db, i)
 	db.commit()
+	db.close()
+	return errors

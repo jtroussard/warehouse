@@ -1,0 +1,5 @@
+# Ignore vim recovery files
+*.swp
+
+# Ignore compiled files
+*.pyc
