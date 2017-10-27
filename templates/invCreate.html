@@ -13,11 +13,11 @@
       <div class="row">
         {% if inv_alert == "success" %}
           <div class="alert alert-success" role="alert">
-            <strong>Well done!</strong> You successfully read this important alert message.
+            <strong>Success!</strong> Invoice # XXXX can be acccessed <a href="#">here</a>.
           </div>
         {% elif inv_alert == "failed" %}
           <div class="alert alert-warning" role="alert">
-            <strong>Warning!</strong> Better check yourself, you're not looking too good.
+            <strong>Failed!</strong> Something went wrong and invoice was not created.
           </div>
         {% endif %}
       </div>
