@@ -99,6 +99,8 @@ def makeSale(invoiceData):
 	conn = connectToPostgres()
 	if conn == None:
 		return None
+	
+	preOp = countInvoices()
 		
 	# Format/Type check data
 	# TODO
@@ -123,6 +125,9 @@ def makeSale(invoiceData):
 	query_string = "INSERT INTO sold (saleid, productid, quantity) VALUES (%s, %s, %s);"
 	results = execute_query(query_string, conn, select=False, args=(tuple(soldData)))
 	
-	# Clean up
+	# Clean up return outcome
 	conn.close()
-	print(results)
+	if (preOp < countInvoices()):
+		return invoiceNumber
+	else:
+		return -1

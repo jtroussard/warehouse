@@ -36,11 +36,15 @@ def invoicePage():
 	if request.method == 'GET':
 		count = pg.countInvoices()
 	return render_template('invoice.html', count=count)
-	
+
+
 # Renders create invoice form/page
 @app.route('/invCreate', methods=['GET', 'POST'])
 def invCreatePage():
 	invoiceData = [] # list of dictionaries
+	invoiceNumber = -1 # Invoice data input integrity
+	inv_alert = ""
+
 	# Create new invoice (sale)
 	if request.method == 'POST':
 		# Debugging stuff
@@ -50,13 +54,28 @@ def invCreatePage():
 		invoiceData.append({'customer':request.form['customer'], 
 		'seller':request.form['seller'], 'date':request.form['date'], 
 		'product':request.form['product'], 'qty':request.form['qty']})
-		pg.makeSale(invoiceData)
+		invoiceNumber = pg.makeSale(invoiceData)
+		print(invoiceNumber)
 		
-	return render_template('invCreate.html')
+		if (invoiceNumber > 0):
+			# Create invoice doc
+			inv_alert = "success"
+		else:
+			inv_alert = "failed"
+		
+	if request.method == 'GET':
+		if (inv_alert == "success"):
+			pass
+		elif (inv_alert == "failed"):
+			pass
+		else:
+			inv_alert = None
+	
+	return render_template('invCreate.html', inv_alert=inv_alert)
 	
 # Renders search invoice form/page 
-@app.route('/invDisplay')
-def invDisplayPage():
+@app.route('/invSearch', methods=['GET', 'POST'])
+def invSearchPage():
 	return render_template('invSearch.html')
 
 #Displays a Products page to search for the products the company offers.
