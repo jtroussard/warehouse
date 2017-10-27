@@ -55,8 +55,10 @@ def invCreatePage():
 	return render_template('invCreate.html')
 	
 # Renders search invoice form/page 
-@app.route('/invDisplay')
+@app.route('/invSearch', methods=['GET', 'POST'])
 def invDisplayPage():
+	if request.method == 'POST':
+		print(request.form)
 	return render_template('invSearch.html')
 
 #Displays a Products page to search for the products the company offers.
