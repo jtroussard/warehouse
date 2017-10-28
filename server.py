@@ -11,7 +11,6 @@ from lib.transaction import processFile
 from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
-<<<<<<< HEAD
 #app.secret_key=os.urandom(24).encode('hex') 
 app.secret_key=binascii.hexlify(os.urandom(32)).decode()
 #session variable: username (fullname), email, role
