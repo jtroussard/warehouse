@@ -162,7 +162,8 @@ def accountsPage():
 	else:
 		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
-	return render_template('accounts.html', sessionUser=sessionUser)
+	userList = pg.listAllUsersWithWarehouses()
+	return render_template('accounts.html', sessionUser=sessionUser, userList=userList)
 	
 	
 
