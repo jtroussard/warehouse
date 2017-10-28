@@ -4,6 +4,7 @@ import uuid
 from lib.config import *
 from lib import data_posgresql as pg
 from lib import tools as tl
+from lib.User import User
 from lib.transaction import processFile
 from flask import Flask, render_template, request, session
 
@@ -11,9 +12,20 @@ app = Flask(__name__)
 #app.secret_key=os.urandom(24).encode('hex') #session variable
 
 #Root mapping
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def mainIndex():
-	return render_template('index.html')
+	loggedIn = False
+	user = None
+	attempted = False
+	if request.method == 'POST':
+		attempted = True
+		email=request.form['email']
+		pwd=request.form['pwd']
+		query = pg.logIn(email, pwd)
+		if query != None  and len(query) > 0:
+			loggedIn = True
+			user = User(query[0], query[1], query[2], query[3])
+	return render_template('index.html', loggedIn=loggedIn, user=user, attempted=attempted)
 	
 #Displays the Import page to import a document
 @app.route('/import', methods=['GET', 'POST'])
