@@ -15,3 +15,6 @@ class User(object):
         self.lastname = lastname
         self.email = email
         self.role = role
+
+    def getFullName(self):
+        return self.firstname + " " + self.lastname

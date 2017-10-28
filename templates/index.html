@@ -4,9 +4,9 @@
 <div class="container">
   <div class="row">
     <div class="col-lg-12">
-      {% if loggedIn %}
+      {% if sessionUser[0] != '' %}
       <h1 class="mt-5">Home</h1>
-      <p class="lead">Welcome {{user.firstname}}! Use the menu bar above to get started.</p>
+      <p class="lead">Welcome {{sessionUser[0]}}! Use the menu bar above to get started.</p>
     {% else %}
         <h1 class="mt-5">Log In</h1>
         <form method='POST' action="/">

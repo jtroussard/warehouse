@@ -9,23 +9,42 @@ from lib.transaction import processFile
 from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
-#app.secret_key=os.urandom(24).encode('hex') #session variable
+app.secret_key=os.urandom(24).encode('hex') 
+#session variable: username (fullname), email
 
 #Root mapping
 @app.route('/', methods=['GET', 'POST'])
 def mainIndex():
-	loggedIn = False
 	user = None
 	attempted = False
+	sessionUser=['','']
+	#Log in user
 	if request.method == 'POST':
 		attempted = True
 		email=request.form['email']
 		pwd=request.form['pwd']
 		query = pg.logIn(email, pwd)
 		if query != None  and len(query) > 0:
-			loggedIn = True
 			user = User(query[0], query[1], query[2], query[3])
-	return render_template('index.html', loggedIn=loggedIn, user=user, attempted=attempted)
+			session['userName'] = user.firstname
+			session['email'] = user.email
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email']]
+	else:
+		sessionUser=['','']
+	return render_template('index.html', sessionUser=sessionUser, attempted=attempted)
+
+@app.route('/logout')
+def logout():
+	if 'email' in session:
+		session.clear()
+	if 'userName' in session: 	# Determine if the user is logged in.
+		sessionUser = [session['userName'], session['email']]
+	else:
+		sessionUser = ['', '']
+	attempted=False
+	return render_template('index.html', sessionUser=sessionUser, attempted=attempted)
 	
 #Displays the Import page to import a document
 @app.route('/import', methods=['GET', 'POST'])
