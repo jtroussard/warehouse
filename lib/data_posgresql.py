@@ -42,8 +42,19 @@ def execute_query(query, conn, select=True, args=None):
 		print(type(e))
 		print(e)
 	cur.close()      # BP3 Dispose of old cursors as soon as possible
-	print(results)
 	return results
+
+#Returns a User if entry matches, or false to reject if no match.
+def logIn(email, password):
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  query_string = "SELECT firstname, lastname, email, role from users where email=%s and password=crypt(%s, password);"
+  result = execute_query(query_string, conn, args=(email, password))
+  conn.close()
+  if result != None and len(result) > 0:
+  	result = result[0]
+  return result
 
 #Search database for products by name, number, and location.
 def searchForProducts(productName, productNumber, warehouse):
@@ -53,25 +64,25 @@ def searchForProducts(productName, productNumber, warehouse):
 	results = None
 	query_string = "SELECT p.id, p.pnumber, p.name, p.price, i.warehouseid, w.tag_number, i.quantity from inventory i join products p on i.productid = p.id join warehouses w on i.warehouseid=w.id WHERE "
 	if (productName != "" and productNumber != "" and warehouse != ""):  #1 name, number, and warehouse
-		query_string += "lower(p.name) like lower(%s) AND lower(p.pnumber)=lower(%s) AND i.warehouseid=%s;"
+		query_string += "lower(p.name) like lower(%s) AND lower(p.pnumber)=lower(%s) AND i.warehouseid=%s ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productName, productNumber, warehouse,))
 	elif (productName != "" and productNumber != "" and warehouse == ""): #2 name, number
-		query_string += "lower(p.name) like lower(%s) AND lower(p.pnumber)=lower(%s);"
+		query_string += "lower(p.name) like lower(%s) AND lower(p.pnumber)=lower(%s) ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productName, productNumber,))
 	elif (productName == "" and productNumber != "" and warehouse != ""): #3 number, warehouse
-		query_string += "lower(p.pnumber)=(%s) AND i.warehouseid=%s;"
+		query_string += "lower(p.pnumber)=(%s) AND i.warehouseid=%s ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productNumber, warehouse,))
 	elif (productName != "" and productNumber == "" and warehouse != ""):  #4 name, warehouse
-		query_string += "lower(p.name) like lower(%s) AND i.warehouseid=%s;"
+		query_string += "lower(p.name) like lower(%s) AND i.warehouseid=%s ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productName, warehouse,))
 	elif (productName != "" and productNumber == "" and warehouse == ""):  #5 name
-		query_string += "lower(p.name) like lower(%s);"
+		query_string += "lower(p.name) like lower(%s) ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productName,))
 	elif (productName == "" and productNumber != "" and warehouse == ""):  #6 number
-		query_string += "lower(p.pnumber)=lower(%s);"
+		query_string += "lower(p.pnumber)=lower(%s) ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(productNumber,))
 	elif (productName == "" and productNumber == "" and warehouse != ""):  #7 warehouse
-		query_string += "i.warehouseid=%s;"
+		query_string += "i.warehouseid=%s ORDER BY p.pnumber, i.warehouseid;"
 		results = execute_query(query_string, conn, args=(warehouse,))
 	#else if all are blank, return empty results.
 	conn.close()
@@ -127,7 +138,22 @@ def makeSale(invoiceData):
 	
 	# Clean up return outcome
 	conn.close()
+<<<<<<< HEAD
 	if (preOp < countInvoices()):
 		return invoiceNumber
 	else:
 		return -1
+=======
+	print(results)
+
+#Selects all user information and warehouse info as needed.
+def listAllUsersWithWarehouses():
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  query_string = "SELECT u.firstname, u.lastname, u.email, u.role, u.password, w.id, w.tag_number from users u left outer join warehouses w on u.email = w.associate;"
+  result = execute_query(query_string, conn)
+  conn.close()
+  print(result)
+  return result
+>>>>>>> cd62e4c96318bac2003b90f6810360cdd761076c
