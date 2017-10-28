@@ -1,0 +1,125 @@
+{% extends "layout.html" %} {% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1 class="mt-5">Accounts</h1>
+      <p class="lead">Manage user accounts for the Warehouse Management System.</p>
+      
+      <div class="currentUsers">
+        <h2>Current Users </h2>
+        {% if userList != None and userList|length > 0 %}
+         <table class="table">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Warehouse Assignment</th>
+                    <th>Update?</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for u in userList %}
+                  <tr>
+                      <td>{{r.firstname}}</td>
+                      <td>{{r.lastname}}</td>
+                      <td>{{r.email}}</td>
+                      <td>{{r.role}}</td>
+                      <td>{{r.warehouseid}}</td>
+                      <td>
+                       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                          Update
+                        </button>
+                      </td>
+                  </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+          <p>No users found.</p>
+        {% endif %}
+    </div> <!--end currentUsers div-->
+      
+      
+      <form class="form-inline" method="POST" action="/products">
+        <div class="row">
+          <div class="form-group">
+            <label class="col-sm-2" for="productNumber">Product Number</label>
+            <div class="col-sm-2"><input type="text" class="form-control" name="productNumber" id="productNumber" placeholder="Product Number" maxlength="25"></div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2" for="productName">Product Name</label>
+            <div class="col-sm-2"><input type="text" class="form-control" name="productName" id="productName" placeholder="Product Name" maxlength="25"></div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2" for="warehouse">Warehouse Id</label>
+            <div class="col-sm-2"><input type="number" class="form-control" name="warehouse" id="warehouse" placeholder="Warehouse" maxlength="5"></div>
+          </div>
+        </div>
+         <!--<div class="row">
+          <div class="form-group">
+            <label class="col-sm-2" for="keyword">Product Keyword</label>
+            <div class="col-sm-2"><input type="text" class="form-control" name="keyword" id="keyword" placeholder="Keyword" maxlength="25"></div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-2" for="productType">Product Type</label>
+            <div class="col-sm-2">
+              <select class="form-control" name="productType" id="productType" placeholder="Product Type">
+                <option>All Types</option>
+                <option>Windshield wiper fluid</option>
+              </select>
+            </div>
+          </div>
+        </div>-->
+        <div class="row">
+          <button type="submit" class="btn btn-primary pull-right col-sm-offset-12">Search</button>
+        </div>
+      </form>
+    </div> <!-- end product search div-->
+  </div> <!--end div class="row"-->
+  <br>
+  <div>
+    {% if results != None and results|length > 0 and isSearching%}
+    <p>Product search <i>{{searchString}}</i> found below.</p>
+     <table class="table">
+        <thead>
+            <tr>
+                <th>Product Id</th>
+                <th>Product Number</th>
+                <th>Product Name</th>
+                <!--<th>Keywords</th>-->
+                <th>Price</th>
+                <th>Warehouse</th>
+                <th>Tag Number</th>
+                <th>Quantity</th>
+                <!--<th>Add to Cart?</th>-->
+            </tr>
+        </thead>
+        <tbody>
+          {% for r in results %}
+              <tr>
+                  <td>{{r.id}}</td>
+                  <td>{{r.pnumber}}</td>
+                  <td>{{r.name}}</td>
+                  <!--<td>windshield wiper fluid</td>-->
+                  <td>{{r.price}}</td>
+                  <td>{{r.warehouseid}}</td>
+                  <td>{{r.tag_number}}</td>
+                  <td>{{r.quantity}}</td>
+                  <!--<td><i class="fa fa-cart-plus fa-lg" aria-hidden="true"></i></td>-->
+              </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    {% if isSearching and not results %}
+      <p>No matching records for <i>{{searchString}}</i>.</p>
+    {% endif %}
+    </div>
+    <!--<br />
+    <div>
+      <p><i>Can't find what you're looking for?</i> &nbsp; <button type="button" class="btn btn-info">Request Product</button></p>
+    </div>-->
+</div> <!-- end div container-->
+{% endblock %}

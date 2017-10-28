@@ -48,6 +48,11 @@
               </a>
             </li>
             {% if sessionUser[0] != '' %}
+              {% if sessionUser[2] == 0 %}
+                <li class="nav-item">
+                  <a class="nav-link" href="/accounts">Accounts</a>
+                </li>
+              {% endif %}
             <li class="nav-item">
               <a class="nav-link" href="/products">Products</a>
             </li>

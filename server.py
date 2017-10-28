@@ -1,23 +1,26 @@
 import os
 import uuid
+import binascii
 
 from lib.config import *
 from lib import data_posgresql as pg
 from lib import tools as tl
 from lib.User import User
+from lib.Role import Role
 from lib.transaction import processFile
 from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
-app.secret_key=os.urandom(24).encode('hex') 
-#session variable: username (fullname), email
+#app.secret_key=os.urandom(24).encode('hex') 
+app.secret_key=binascii.hexlify(os.urandom(32)).decode()
+#session variable: username (fullname), email, role
 
 #Root mapping
 @app.route('/', methods=['GET', 'POST'])
 def mainIndex():
 	user = None
 	attempted = False
-	sessionUser=['','']
+	sessionUser=['','', '']
 	#Log in user
 	if request.method == 'POST':
 		attempted = True
@@ -28,9 +31,10 @@ def mainIndex():
 			user = User(query[0], query[1], query[2], query[3])
 			session['userName'] = user.firstname
 			session['email'] = user.email
+			session['role'] = user.role.value
 	#Session Check
 	if 'userName' in session:
-		sessionUser = [session['userName'], session['email']]
+		sessionUser = [session['userName'], session['email'], session['role']]
 	else:
 		sessionUser=['','']
 	return render_template('index.html', sessionUser=sessionUser, attempted=attempted)
@@ -40,9 +44,9 @@ def logout():
 	if 'email' in session:
 		session.clear()
 	if 'userName' in session: 	# Determine if the user is logged in.
-		sessionUser = [session['userName'], session['email']]
+		sessionUser = [session['userName'], session['email'], session['role']]
 	else:
-		sessionUser = ['', '']
+		sessionUser = ['', '', '']
 	attempted=False
 	return render_template('index.html', sessionUser=sessionUser, attempted=attempted)
 	
@@ -51,9 +55,9 @@ def logout():
 def importPage():
 	#Session Check
 	if 'userName' in session:
-		sessionUser = [session['userName'], session['email']]
+		sessionUser = [session['userName'], session['email'], session['role']]
 	else:
-		sessionUser=['','']
+		sessionUser=['','', '']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	if request.method == 'GET':
 		return render_template('import.html', post=False, sessionUser=sessionUser)
@@ -74,9 +78,9 @@ def invoicePage():
 		count = pg.countInvoices()
 	#Session Check
 	if 'userName' in session:
-		sessionUser = [session['userName'], session['email']]
+		sessionUser = [session['userName'], session['email'], session['role']]
 	else:
-		sessionUser=['','']
+		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	return render_template('invoice.html', count=count, sessionUser=sessionUser)
 	
@@ -96,9 +100,9 @@ def invCreatePage():
 		pg.makeSale(invoiceData)
 		#Session Check
 	if 'userName' in session:
-		sessionUser = [session['userName'], session['email']]
+		sessionUser = [session['userName'], session['email'], session['role']]
 	else:
-		sessionUser=['','']
+		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	return render_template('invCreate.html', sessionUser=sessionUser)
 	
@@ -107,9 +111,9 @@ def invCreatePage():
 def invDisplayPage():
 	#Session Check
 	if 'userName' in session:
-		sessionUser = [session['userName'], session['email']]
+		sessionUser = [session['userName'], session['email'], session['role']]
 	else:
-		sessionUser=['','']
+		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	return render_template('invSearch.html', sessionUser=sessionUser)
 
@@ -143,11 +147,24 @@ def productsPage():
 		results = pg.searchForProducts(pname, pnumber, warehouse)
 	#Session Check
 	if 'userName' in session:
-		sessionUser = [session['userName'], session['email']]
+		sessionUser = [session['userName'], session['email'], session['role']]
 	else:
-		sessionUser=['','']
+		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString, sessionUser=sessionUser)
+
+# Renders search invoice form/page 
+@app.route('/accounts')
+def accountsPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	return render_template('accounts.html', sessionUser=sessionUser)
+	
+	
 
 
 # start the server

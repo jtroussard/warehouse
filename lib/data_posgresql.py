@@ -138,3 +138,4 @@ def makeSale(invoiceData):
 	# Clean up
 	conn.close()
 	print(results)
+

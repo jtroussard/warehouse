@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+from lib.Role import Role
+
 #Class encapsulates a user as an object.
 class User(object):
     """
@@ -14,7 +16,7 @@ class User(object):
         self.firstname = firstname
         self.lastname = lastname
         self.email = email
-        self.role = role
+        self.role = Role(role)
 
     def getFullName(self):
         return self.firstname + " " + self.lastname
