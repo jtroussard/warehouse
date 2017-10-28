@@ -3,27 +3,12 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-12">
-        <h1 class="mt-5">Create Invoice</h1>
-        <p class="lead">Here you can create an invoice. Enter all necessary fields</p>
+        <h1 class="mt-5">Search Invoices</h1>
+        <p class="lead">Here you can search for invoices. Enter desired search critera.</p>
       </div>
     </div>
     
-    <!-- Alert notification -->
-    {% if inv_alert %}
-      <div class="row">
-        {% if inv_alert == "success" %}
-          <div class="alert alert-success" role="alert">
-            <strong>Success!</strong> Invoice # XXXX can be acccessed <a href="#">here</a>.
-          </div>
-        {% elif inv_alert == "failed" %}
-          <div class="alert alert-warning" role="alert">
-            <strong>Failed!</strong> Something went wrong and invoice was not created.
-          </div>
-        {% endif %}
-      </div>
-    {% endif %}
-    
-    <form method="POST" action="/invCreate">
+    <form method="POST" action="/invSearch">
       <div class="row">
         <div class="col-md-6 mb-3">
           <label for="validationDefault01">Customer ID</label>
@@ -57,8 +42,8 @@
           </div>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Submit</button>
+      <button type="submit" class="btn btn-primary">Submit</button>
     </form>
-  </div><!-- END OF CONTAINER -->
+    </div><!-- END OF CONTAINER -->
   {% endblock %}
 

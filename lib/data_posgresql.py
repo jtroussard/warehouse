@@ -110,6 +110,8 @@ def makeSale(invoiceData):
 	conn = connectToPostgres()
 	if conn == None:
 		return None
+	
+	preOp = countInvoices()
 		
 	# Format/Type check data
 	# TODO
@@ -134,8 +136,14 @@ def makeSale(invoiceData):
 	query_string = "INSERT INTO sold (saleid, productid, quantity) VALUES (%s, %s, %s);"
 	results = execute_query(query_string, conn, select=False, args=(tuple(soldData)))
 	
-	# Clean up
+	# Clean up return outcome
 	conn.close()
+<<<<<<< HEAD
+	if (preOp < countInvoices()):
+		return invoiceNumber
+	else:
+		return -1
+=======
 	print(results)
 
 #Selects all user information and warehouse info as needed.
@@ -148,3 +156,4 @@ def listAllUsersWithWarehouses():
   conn.close()
   print(result)
   return result
+>>>>>>> cd62e4c96318bac2003b90f6810360cdd761076c
