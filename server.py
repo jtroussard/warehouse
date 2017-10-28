@@ -49,15 +49,21 @@ def logout():
 #Displays the Import page to import a document
 @app.route('/import', methods=['GET', 'POST'])
 def importPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email']]
+	else:
+		sessionUser=['','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	if request.method == 'GET':
-		return render_template('import.html', post=False)
+		return render_template('import.html', post=False, sessionUser=sessionUser)
 	tmpfile = 'tmp.csv'
 	file = request.files['csvfile']
 	file.save(tmpfile)
 	result = processFile(tmpfile)
 	print(result)
 	os.remove(tmpfile)
-	return render_template('import.html', post=True, result=result)
+	return render_template('import.html', post=True, result=result, sessionUser=sessionUser)
 
 #Displays the Invoice page to create and displays invoices	
 @app.route('/invoice')
@@ -66,7 +72,13 @@ def invoicePage():
 	# 
 	if request.method == 'GET':
 		count = pg.countInvoices()
-	return render_template('invoice.html', count=count)
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email']]
+	else:
+		sessionUser=['','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	return render_template('invoice.html', count=count, sessionUser=sessionUser)
 	
 # Renders create invoice form/page
 @app.route('/invCreate', methods=['GET', 'POST'])
@@ -82,13 +94,24 @@ def invCreatePage():
 		'seller':request.form['seller'], 'date':request.form['date'], 
 		'product':request.form['product'], 'qty':request.form['qty']})
 		pg.makeSale(invoiceData)
-		
-	return render_template('invCreate.html')
+		#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email']]
+	else:
+		sessionUser=['','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	return render_template('invCreate.html', sessionUser=sessionUser)
 	
 # Renders search invoice form/page 
 @app.route('/invDisplay')
 def invDisplayPage():
-	return render_template('invSearch.html')
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email']]
+	else:
+		sessionUser=['','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	return render_template('invSearch.html', sessionUser=sessionUser)
 
 #Displays a Products page to search for the products the company offers.
 @app.route('/products', methods=['GET', 'POST'])
@@ -118,7 +141,13 @@ def productsPage():
 		if pname + pnumber + warehouse == "":
 			searchString = "empty string"
 		results = pg.searchForProducts(pname, pnumber, warehouse)
-	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString)
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email']]
+	else:
+		sessionUser=['','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString, sessionUser=sessionUser)
 
 
 # start the server
