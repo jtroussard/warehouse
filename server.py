@@ -11,10 +11,11 @@ from lib.transaction import processFile
 from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
-#app.secret_key=os.urandom(24).encode('hex') 
 app.secret_key=binascii.hexlify(os.urandom(24)).decode()
-#app.secret_key=os.urandom(24).encode('hex') # gives attr error no encode for bytes keeping incase hexlify has issues on another machine
 #session variable: username (fullname), email
+
+# Error no encode for bytes keeping incase hexlify has issues on another machine
+#app.secret_key=os.urandom(24).encode('hex')
 
 #Root mapping
 @app.route('/', methods=['GET', 'POST'])
