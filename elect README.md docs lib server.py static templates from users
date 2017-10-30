@@ -1,0 +1,16 @@
+                List of relations
+ Schema |       Name        |   Type   |  Owner   
+--------+-------------------+----------+----------
+ public | customers         | table    | postgres
+ public | customers_id_seq  | sequence | postgres
+ public | inventory         | table    | postgres
+ public | products          | table    | postgres
+ public | products_id_seq   | sequence | postgres
+ public | sales             | table    | postgres
+ public | sales_id_seq      | sequence | postgres
+ public | sold              | table    | postgres
+ public | users             | table    | postgres
+ public | warehouses        | table    | postgres
+ public | warehouses_id_seq | sequence | postgres
+(11 rows)
+

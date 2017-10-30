@@ -14,6 +14,8 @@ DROP TABLE IF EXISTS sales CASCADE;
 DROP SEQUENCE IF EXISTS sales_id_seq;
 DROP TABLE IF EXISTS sold CASCADE;
 
+CREATE EXTENSION pgcrypto;
+
 CREATE TABLE warehouses (
 	id serial NOT NULL PRIMARY KEY,
 	associate TEXT,
@@ -103,6 +105,14 @@ INSERT INTO users VALUES (
 	0
 );
 
+INSERT INTO users VALUES (
+	'jacques.troussard@gmail.com',
+	crypt('jackdale', gen_salt('bf')),
+	'Jacques',
+	'Troussard',
+	0
+);
+
 INSERT INTO customers VALUES (
 	0,
 	'George Washington'
@@ -115,3 +125,4 @@ INSERT INTO products VALUES (
 	'Fix anything. Pour in washer fluid reservoir. 8oz bottle',
 	9.99
 );
+

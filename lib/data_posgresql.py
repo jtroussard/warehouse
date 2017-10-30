@@ -124,6 +124,7 @@ def makeSale(invoiceData):
 	results = execute_query(query_string, conn, select=True, args=(productName,))
 	if results:
 		productid = results[0][0]
+		
 
 	# Insert sale row - select set as true for returning id
 	saleData = [invoiceData[0]['date'], invoiceData[0]['seller'], invoiceData[0]['customer']]
@@ -138,12 +139,10 @@ def makeSale(invoiceData):
 	
 	# Clean up return outcome
 	conn.close()
-<<<<<<< HEAD
 	if (preOp < countInvoices()):
 		return invoiceNumber
 	else:
 		return -1
-=======
 	print(results)
 
 #Selects all user information and warehouse info as needed.
@@ -156,4 +155,3 @@ def listAllUsersWithWarehouses():
   conn.close()
   print(result)
   return result
->>>>>>> cd62e4c96318bac2003b90f6810360cdd761076c

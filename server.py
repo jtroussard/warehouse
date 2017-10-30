@@ -78,11 +78,6 @@ def invoicePage():
 	# 
 	if request.method == 'GET':
 		count = pg.countInvoices()
-<<<<<<< HEAD
-	return render_template('invoice.html', count=count)
-
-
-=======
 	#Session Check
 	if 'userName' in session:
 		sessionUser = [session['userName'], session['email'], session['role']]
@@ -91,13 +86,21 @@ def invoicePage():
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	return render_template('invoice.html', count=count, sessionUser=sessionUser)
 	
->>>>>>> cd62e4c96318bac2003b90f6810360cdd761076c
 # Renders create invoice form/page
 @app.route('/invCreate', methods=['GET', 'POST'])
 def invCreatePage():
 	invoiceData = [] # list of dictionaries
 	invoiceNumber = -1 # Invoice data input integrity
 	inv_alert = ""
+	
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','', '']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	if request.method == 'GET':
+		return render_template('invCreate.html', post=False, sessionUser=sessionUser)
 
 	# Create new invoice (sale)
 	if request.method == 'POST':
@@ -108,7 +111,6 @@ def invCreatePage():
 		invoiceData.append({'customer':request.form['customer'], 
 		'seller':request.form['seller'], 'date':request.form['date'], 
 		'product':request.form['product'], 'qty':request.form['qty']})
-<<<<<<< HEAD
 		invoiceNumber = pg.makeSale(invoiceData)
 		print(invoiceNumber)
 		
@@ -125,23 +127,8 @@ def invCreatePage():
 			pass
 		else:
 			inv_alert = None
-	
-	return render_template('invCreate.html', inv_alert=inv_alert)
-	
-# Renders search invoice form/page 
-@app.route('/invSearch', methods=['GET', 'POST'])
-def invSearchPage():
-	return render_template('invSearch.html')
-=======
-		pg.makeSale(invoiceData)
-		#Session Check
-	if 'userName' in session:
-		sessionUser = [session['userName'], session['email'], session['role']]
-	else:
-		sessionUser=['','','']
-		return render_template('index.html', sessionUser=sessionUser, attempted=False)
-	return render_template('invCreate.html', sessionUser=sessionUser)
-	
+	return render_template('invCreate.html', inv_alert=inv_alert, sessionUser=sessionUser)
+
 # Renders search invoice form/page 
 @app.route('/invDisplay')
 def invDisplayPage():
@@ -152,7 +139,6 @@ def invDisplayPage():
 		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	return render_template('invSearch.html', sessionUser=sessionUser)
->>>>>>> cd62e4c96318bac2003b90f6810360cdd761076c
 
 #Displays a Products page to search for the products the company offers.
 @app.route('/products', methods=['GET', 'POST'])
@@ -190,7 +176,7 @@ def productsPage():
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString, sessionUser=sessionUser)
 
-# Renders search invoice form/page 
+#
 @app.route('/accounts')
 def accountsPage():
 	#Session Check
