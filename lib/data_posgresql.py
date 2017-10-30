@@ -150,7 +150,7 @@ def invSearch(term, start, end):
 		sales.datesold as datesold,
 		users.firstname || ' ' || users.lastname as assoc,
 		customers.name as cust,
-		(select SUM(price * sold.quantity) from products JOIN sold on sold.saleid = sales.id where id = sold.productid) as total
+		(SELECT SUM(price * sold.quantity) FROM products JOIN sold ON sold.saleid = sales.id WHERE id = sold.productid) as total
 	FROM sales
 		JOIN users ON sales.seller = users.email
 		JOIN customers ON sales.customerid = customers.id

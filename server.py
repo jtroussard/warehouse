@@ -123,7 +123,6 @@ def invDisplayPage():
 		start = request.form.get('start')
 		end = request.form.get('end')
 		results = pg.invSearch(term, start, end)
-		print(results)
 	return render_template('invSearch.html', sessionUser=sessionUser, results=results)
 
 
