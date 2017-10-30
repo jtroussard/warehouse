@@ -58,7 +58,10 @@ def invCreatePage():
 @app.route('/invSearch', methods=['GET', 'POST'])
 def invDisplayPage():
 	if request.method == 'POST':
-		print(request.form)
+		term = request.form.get('keyword')
+		start = request.form.get('start')
+		end = request.form.get('end')
+		results = pg.invSearch(term, start, end)
 	return render_template('invSearch.html')
 
 #Displays a Products page to search for the products the company offers.

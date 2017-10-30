@@ -126,3 +126,38 @@ def makeSale(invoiceData):
 	# Clean up
 	conn.close()
 	print(results)
+
+def invSearch(term, start, end):
+	term = '%{}%'.format(term)
+	start = start if start else '-infinity'
+	end = end if end else 'infinity'
+	db = connectToPostgres()
+	query = '''
+	SELECT
+		sales.datesold as datesold,
+		products.name as pname,
+		products.pnumber as pnumber,
+		products.price as price,
+		sold.quantity as quantity,
+		users.firstname as fname,
+		users.lastname as lname,
+		customers.name as customer,
+		customers.address as address
+	FROM sales
+		JOIN sold ON sales.id = sold.saleid
+		JOIN products on products.id = sold.productid
+		JOIN users ON sales.seller = users.email
+		JOIN customers ON sales.customerid = customers.id
+	WHERE
+		(sales.customerid IN (SELECT id FROM customers WHERE name LIKE %s)
+		OR users.firstname LIKE %s
+		OR users.lastname LIKE %s)
+		AND sales.datesold >= %s AND sales.datesold <= %s
+	ORDER BY sales.datesold;'''
+	# print(query)
+	cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+	query = cur.mogrify(query, (term, term, term, start, end))
+	cur.execute(query)
+	invs =cur.fetchall()
+	db.close()
+	return invs
