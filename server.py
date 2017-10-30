@@ -5,6 +5,7 @@ import binascii
 from lib.config import *
 from lib import data_posgresql as pg
 from lib import tools as tl
+from lib import invoice_factory
 from lib.User import User
 from lib.Role import Role
 from lib.transaction import processFile
@@ -112,13 +113,15 @@ def invCreatePage():
 		'seller':request.form['seller'], 'date':request.form['date'], 
 		'product':request.form['product'], 'qty':request.form['qty']})
 		invoiceNumber = pg.makeSale(invoiceData)
-		print(invoiceNumber)
 		
 		if (invoiceNumber > 0):
 			# Create invoice doc
-			inv_alert = "success"
+			if invoice_factory.makeInvoice(invoiceData, invoiceNumber):
+				inv_alert = "success"
+			else:
+				inv_alert = "failed" # On creation - see makeInvoice
 		else:
-			inv_alert = "failed"
+			inv_alert = "failed" # On number generation - see makeSale
 		
 	if request.method == 'GET':
 		if (inv_alert == "success"):
@@ -127,7 +130,7 @@ def invCreatePage():
 			pass
 		else:
 			inv_alert = None
-	return render_template('invCreate.html', inv_alert=inv_alert, sessionUser=sessionUser)
+	return render_template('invCreate.html', inv_alert=inv_alert, invoiceNumber=invoiceNumber, sessionUser=sessionUser)
 
 # Renders search invoice form/page 
 @app.route('/invDisplay')

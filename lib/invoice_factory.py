@@ -9,9 +9,13 @@ __author__     = "Jacques Troussard"
 __date__       = "Sun Oct 29 2017"
 
 def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts where dict is line
-    result = False
+    result = True # Return value for validation
     invoice_directory = "invoices/"
     file_name = "{}{}-{}{}".format(invoice_directory, str(int(invoice_number) * 100), strftime("%m"), strftime("%y"))
+    # Think about error checking when opening a file
+    # From Python Docs: 
+    #   Open file and return a corresponding file object. If the file cannot be 
+    #   opened, an OSError is raised.
     output_file = open(file_name, "a")
     
     # Invoice formatting based on 8.5" x 11" paper with 0.5" margins (u,l,r,d)
@@ -42,10 +46,10 @@ def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts wh
     invoice_header = "<BG Distributive Group Company Name> Invoice"
     todays_date = strftime("%a, %d %b %Y")
     table_header = "product name             part number           qty    price    total amount" # 75 characters long
-    table_footer = "{:>{offset} ${:>75}".format("Grand Total: ", test_total, offset=75-total_offset)
+    table_footer = "{:>{offset}} ${:>75}".format("Grand Total: ", test_total, offset=75-total_offset)
     
     # Write up to the table
     for element in vendor_details:
         if element:
-            output_file.write("{:>75}".format(element))
+            output_file.write("{:>75}\n".format(element))
     return result
