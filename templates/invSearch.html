@@ -22,7 +22,36 @@
             <button type="submit" class="btn btn-primary">Search</button>
           </div>
       </form>
-      
+      </div>
     </div>
+    <table class="table" id="result-set">
+      <thead>
+        <tr>
+          <th>Invoice ID</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Associate</th>
+          <th>Total</th>
+          <th>Download</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td>{{r.id}}</td>
+          <td>{{r.datesold}}</td>
+          <td>{{r.cust}}</td>
+          <td>{{r.assoc}}</td>
+          <td>{{'$' ~ r.total}}</td>
+          <td>
+            <button class="btn btn-default">
+              <i class="fa fa-arrow-down" aria-hidden="true"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
-  {% endblock %}
+</div>
+{% endblock %}

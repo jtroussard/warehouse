@@ -138,7 +138,7 @@ def makeSale(invoiceData):
 	conn.close()
 	print(results)
 
-# RETURN a list of dicts with keys {datesold, product, prodnumber, unitprice, quantity, seller, customer, custaddress}
+# RETURN a list of rows with keys {id, datesold, assoc, cust, custaddress}
 def invSearch(term, start, end):
 	term = '%{}%'.format(term)
 	start = start if start else '-infinity'
@@ -146,17 +146,12 @@ def invSearch(term, start, end):
 	db = connectToPostgres()
 	query = '''
 	SELECT
+		sales.id as id,
 		sales.datesold as datesold,
-		products.name as product,
-		products.pnumber as prodnumber,
-		products.price as unitprice,
-		sold.quantity as quantity,
-		users.firstname || users.lastname as seller,
-		customers.name as customer,
-		customers.address as custaddress
+		users.firstname || ' ' || users.lastname as assoc,
+		customers.name as cust,
+		(select SUM(price * sold.quantity) from products JOIN sold on sold.saleid = sales.id where id = sold.productid) as total
 	FROM sales
-		JOIN sold ON sales.id = sold.saleid
-		JOIN products on products.id = sold.productid
 		JOIN users ON sales.seller = users.email
 		JOIN customers ON sales.customerid = customers.id
 	WHERE
@@ -164,12 +159,8 @@ def invSearch(term, start, end):
 		OR users.firstname LIKE %s
 		OR users.lastname LIKE %s)
 		AND sales.datesold >= %s AND sales.datesold <= %s
-	ORDER BY sales.datesold, users.lastname, users.firstname;'''
-	# print(query)
-	cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-	query = cur.mogrify(query, (term, term, term, start, end))
-	cur.execute(query)
-	invs =cur.fetchall()
+	ORDER BY sales.datesold DESC, users.lastname, users.firstname;'''
+	invs = execute_query(query, db, True, (term, term, term, start, end))
 	db.close()
 	return invs
 

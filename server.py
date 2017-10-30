@@ -116,12 +116,15 @@ def invDisplayPage():
 	else:
 		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+
+	results = []
 	if request.method == 'POST':
 		term = request.form.get('keyword')
 		start = request.form.get('start')
 		end = request.form.get('end')
 		results = pg.invSearch(term, start, end)
-	return render_template('invSearch.html')
+		print(results)
+	return render_template('invSearch.html', sessionUser=sessionUser, results=results)
 
 
 #Displays a Products page to search for the products the company offers.
