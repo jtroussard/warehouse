@@ -133,7 +133,7 @@ def invCreatePage():
 	return render_template('invCreate.html', inv_alert=inv_alert, invoiceNumber=invoiceNumber, sessionUser=sessionUser)
 
 # Renders search invoice form/page 
-@app.route('/invDisplay')
+@app.route('/invSearch', methods=['GET', 'POST'])
 def invDisplayPage():
 	#Session Check
 	if 'userName' in session:
@@ -141,7 +141,15 @@ def invDisplayPage():
 	else:
 		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
-	return render_template('invSearch.html', sessionUser=sessionUser)
+
+	results = []
+	if request.method == 'POST':
+		term = request.form.get('keyword')
+		start = request.form.get('start')
+		end = request.form.get('end')
+		results = pg.invSearch(term, start, end)
+	return render_template('invSearch.html', sessionUser=sessionUser, results=results)
+
 
 #Displays a Products page to search for the products the company offers.
 @app.route('/products', methods=['GET', 'POST'])
