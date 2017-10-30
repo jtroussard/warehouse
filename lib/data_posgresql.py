@@ -124,7 +124,6 @@ def makeSale(invoiceData):
 	results = execute_query(query_string, conn, select=True, args=(productName,))
 	if results:
 		productid = results[0][0]
-		
 
 	# Insert sale row - select set as true for returning id
 	saleData = [invoiceData[0]['date'], invoiceData[0]['seller'], invoiceData[0]['customer']]
@@ -144,6 +143,30 @@ def makeSale(invoiceData):
 	else:
 		return -1
 	print(results)
+	
+# 
+def getProductPrice(part_number):
+	conn = connectToPostgres()
+	if conn == None:
+		return None
+	
+	query_string = "SELECT price FROM products WHERE pnumber = %s;"
+	results = execute_query(query_string, conn, select=True, args=(part_number,))
+	if results:
+		return results[0][0]
+		
+# Return product name via part number
+# Ideally returns one result in list
+# results[0]
+def getProductName(part_number):
+	conn = connectToPostgres()
+	if conn == None:
+		return None
+	
+	query_string = "SELECT name FROM products WHERE pnumber = %s;"
+	results = execute_query(query_string, conn, select=True, args=(part_number,))
+	return results[0]
+		
 
 #Selects all user information and warehouse info as needed.
 def listAllUsersWithWarehouses():
