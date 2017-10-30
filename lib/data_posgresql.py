@@ -138,7 +138,7 @@ def makeSale(invoiceData):
 	conn.close()
 	print(results)
 
-# RETURN a list of rows with keys {id, datesold, assoc, cust, custaddress}
+# RETURN a list of rows with keys {id, datesold, assoc, cust, total}
 def invSearch(term, start, end):
 	term = '%{}%'.format(term)
 	start = start if start else '-infinity'
