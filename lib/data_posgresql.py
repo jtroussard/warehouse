@@ -127,6 +127,7 @@ def makeSale(invoiceData):
 	conn.close()
 	print(results)
 
+# RETURN a list of dicts with keys {datesold, product, prodnumber, unitprice, quantity, seller, customer, custaddress}
 def invSearch(term, start, end):
 	term = '%{}%'.format(term)
 	start = start if start else '-infinity'
@@ -135,14 +136,13 @@ def invSearch(term, start, end):
 	query = '''
 	SELECT
 		sales.datesold as datesold,
-		products.name as pname,
-		products.pnumber as pnumber,
-		products.price as price,
+		products.name as product,
+		products.pnumber as prodnumber,
+		products.price as unitprice,
 		sold.quantity as quantity,
-		users.firstname as fname,
-		users.lastname as lname,
+		users.firstname || users.lastname as seller,
 		customers.name as customer,
-		customers.address as address
+		customers.address as custaddress
 	FROM sales
 		JOIN sold ON sales.id = sold.saleid
 		JOIN products on products.id = sold.productid
@@ -153,7 +153,7 @@ def invSearch(term, start, end):
 		OR users.firstname LIKE %s
 		OR users.lastname LIKE %s)
 		AND sales.datesold >= %s AND sales.datesold <= %s
-	ORDER BY sales.datesold;'''
+	ORDER BY sales.datesold, users.lastname, users.firstname;'''
 	# print(query)
 	cur = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 	query = cur.mogrify(query, (term, term, term, start, end))
