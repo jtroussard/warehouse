@@ -42,8 +42,19 @@ def execute_query(query, conn, select=True, args=None):
 		print(type(e))
 		print(e)
 	cur.close()      # BP3 Dispose of old cursors as soon as possible
-	print(results)
 	return results
+
+#Returns a User if entry matches, or false to reject if no match.
+def logIn(email, password):
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  query_string = "SELECT firstname, lastname, email, role from users where email=%s and password=crypt(%s, password);"
+  result = execute_query(query_string, conn, args=(email, password))
+  conn.close()
+  if result != None and len(result) > 0:
+  	result = result[0]
+  return result
 
 #Search database for products by name, number, and location.
 def searchForProducts(productName, productNumber, warehouse):
@@ -161,3 +172,14 @@ def invSearch(term, start, end):
 	invs =cur.fetchall()
 	db.close()
 	return invs
+
+#Selects all user information and warehouse info as needed.
+def listAllUsersWithWarehouses():
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  query_string = "SELECT u.firstname, u.lastname, u.email, u.role, u.password, w.id, w.tag_number from users u left outer join warehouses w on u.email = w.associate;"
+  result = execute_query(query_string, conn)
+  conn.close()
+  print(result)
+  return result

@@ -49,6 +49,12 @@
                 <span class="sr-only">(current)</span>
               </a>
             </li>
+            {% if sessionUser[0] != '' %}
+              {% if sessionUser[2] == 0 %}
+                <li class="nav-item">
+                  <a class="nav-link" href="/accounts">Accounts</a>
+                </li>
+              {% endif %}
             <li class="nav-item">
               <a class="nav-link" href="/products">Products</a>
             </li>
@@ -63,7 +69,10 @@
                Checkout&nbsp;<i class="fa fa-shopping-cart fa-2x" aria-hidden="true"></i></a>
              
             </li>-->
-            
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Logout</a>
+            </li>
+            {% endif %}
           </ul>
         </div>
       </div>
