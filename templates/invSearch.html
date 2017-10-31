@@ -1,49 +1,57 @@
-{% extends "layout.html" %}
-{% block content %}
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12">
-        <h1 class="mt-5">Search Invoices</h1>
-        <p class="lead">Here you can search for invoices. Enter desired search critera.</p>
+{% extends "layout.html" %} {% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12">
+      <h1 class="mt-5">Invoice Search</h1>
+      <br/>
+      <form action="/invSearch" method="POST" class="form">
+        <div class="form-group row">
+          <div class="col-md-6">
+            <input type="text" class="form-control" name="keyword" id="keword" placeholder="Seller name, customer name, etc..." />
+          </div>
+          <div class="col-md-4">
+            <div class="input-group date" data-provide="datepicker-inline">
+              <input type="text" data-provide="datepicker" class="form-control" id="start" name="start" data-date-format="yyyy-mm-dd" placeholder="yyyy-mm-dd"
+              />
+              <span class="input-group-addon">to</span>
+              <input type="text" data-provide="datepicker" class="form-control" id="end" name="end" data-date-format="yyyy-mm-dd" placeholder="yyyy-mm-dd"
+              />
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
+      </form>
       </div>
     </div>
-    
-    <form method="POST" action="/invSearch">
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label for="validationDefault01">Customer ID</label>
-          <input type="text" class="form-control" id="customer" name="customer" placeholder="" required>
-        </div>
-        <div class="col-md-6 mb-3">
-          <label for="validationDefault02">Seller</label>
-          <input type="text" class="form-control" id="seller" name="seller" placeholder="" required>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-3 mb-3">
-          <label for="validationDefault03">Date</label>
-          <input type="text" class="form-control" id="date" name="date" placeholder="" required>
-          <div class="invalid-feedback">
-            Please provide the date of sale.
-          </div>
-        </div>
-        <div class="col-md-6 mb-3">
-          <label for="validationDefault04">Product ID</label>
-          <input type="text" class="form-control" id="product" name="product" placeholder="" required>
-          <div class="invalid-feedback">
-            Please provide product part number.
-          </div>
-        </div>
-        <div class="col-md-3 mb-3">
-          <label for="validationDefault05">Qty</label>
-          <input type="number" class="form-control" id="qty" name="qty" placeholder="" required>
-          <div class="invalid-feedback">
-            Please provide quantity.
-          </div>
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-    </div><!-- END OF CONTAINER -->
-  {% endblock %}
-
+    <table class="table" id="result-set">
+      <thead>
+        <tr>
+          <th>Invoice ID</th>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Associate</th>
+          <th>Total</th>
+          <th>Download</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td>{{r.id}}</td>
+          <td>{{r.datesold}}</td>
+          <td>{{r.cust}}</td>
+          <td>{{r.assoc}}</td>
+          <td>{{'$' ~ r.total}}</td>
+          <td>
+            <button class="btn btn-default">
+              <i class="fa fa-arrow-down" aria-hidden="true"></i>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

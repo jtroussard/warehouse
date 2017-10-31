@@ -138,13 +138,38 @@ def makeSale(invoiceData):
 	
 	# Clean up return outcome
 	conn.close()
-<<<<<<< HEAD
+	
 	if (preOp < countInvoices()):
 		return invoiceNumber
 	else:
 		return -1
-=======
 	print(results)
+
+# RETURN a list of rows with keys {id, datesold, assoc, cust, total}
+def invSearch(term, start, end):
+	term = '%{}%'.format(term)
+	start = start if start else '-infinity'
+	end = end if end else 'infinity'
+	db = connectToPostgres()
+	query = '''
+	SELECT
+		sales.id as id,
+		sales.datesold as datesold,
+		users.firstname || ' ' || users.lastname as assoc,
+		customers.name as cust,
+		(SELECT SUM(price * sold.quantity) FROM products JOIN sold ON sold.saleid = sales.id WHERE id = sold.productid) as total
+	FROM sales
+		JOIN users ON sales.seller = users.email
+		JOIN customers ON sales.customerid = customers.id
+	WHERE
+		(sales.customerid IN (SELECT id FROM customers WHERE name LIKE %s)
+		OR users.firstname LIKE %s
+		OR users.lastname LIKE %s)
+		AND sales.datesold >= %s AND sales.datesold <= %s
+	ORDER BY sales.datesold DESC, users.lastname, users.firstname;'''
+	invs = execute_query(query, db, True, (term, term, term, start, end))
+	db.close()
+	return invs
 
 #Selects all user information and warehouse info as needed.
 def listAllUsersWithWarehouses():
@@ -156,4 +181,3 @@ def listAllUsersWithWarehouses():
   conn.close()
   print(result)
   return result
->>>>>>> cd62e4c96318bac2003b90f6810360cdd761076c

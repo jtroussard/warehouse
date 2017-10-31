@@ -1,25 +1,28 @@
 {% extends "layout.html" %} {% block content %}
 <div class="container">
   <div class="row">
-    <div class="col-sm-12">
+    <div class="col-lg-12">
       <h1 class="mt-5">Products</h1>
       <p class="lead">Add critieria to search for the location and product information on the warehouse's products.</p>
       <form class="form-inline" method="POST" action="/products">
         <div class="row">
           <div class="form-group">
-            <label class="col-sm-2" for="productNumber">Product Number</label>
-            <div class="col-sm-2"><input type="text" class="form-control" name="productNumber" id="productNumber" placeholder="Product Number" maxlength="25"></div>
+            <div class="col-sm-2">
+              <input type="text" class="form-control" name="productNumber" id="productNumber" placeholder="Product Number"
+                maxlength="25">
+            </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2" for="productName">Product Name</label>
-            <div class="col-sm-2"><input type="text" class="form-control" name="productName" id="productName" placeholder="Product Name" maxlength="25"></div>
+            <div class="col-sm-2">
+              <input type="text" class="form-control" name="productName" id="productName" placeholder="Product Name" maxlength="25">
+            </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2" for="warehouse">Warehouse Id</label>
-            <div class="col-sm-2"><input type="number" class="form-control" name="warehouse" id="warehouse" placeholder="Warehouse" maxlength="5"></div>
+            <div class="col-sm-2">
+              <input type="number" min=1 class="form-control" name="warehouse" id="warehouse" placeholder="Warehouse ID" maxlength="5">
+            </div>
           </div>
-        </div>
-         <!--<div class="row">
+          <!--<div class="row">
           <div class="form-group">
             <label class="col-sm-2" for="keyword">Product Keyword</label>
             <div class="col-sm-2"><input type="text" class="form-control" name="keyword" id="keyword" placeholder="Keyword" maxlength="25"></div>
@@ -34,54 +37,59 @@
             </div>
           </div>
         </div>-->
-        <div class="row">
-          <button type="submit" class="btn btn-primary pull-right col-sm-offset-12">Search</button>
+          <div class="form-group">
+            <button type="submit" class="btn btn-primary pull-right col-sm-offset-12">Search</button>
+          </div>
         </div>
       </form>
-    </div> <!-- end product search div-->
-  </div> <!--end div class="row"-->
+    </div>
+    <!-- end product search div-->
+  </div>
+  <!--end div class="row"-->
   <br>
   <div>
     {% if results != None and results|length > 0 and isSearching%}
-    <p>Product search <i>{{searchString}}</i> found below.</p>
-     <table class="table">
-        <thead>
-            <tr>
-                <th>Product Id</th>
-                <th>Product Number</th>
-                <th>Product Name</th>
-                <!--<th>Keywords</th>-->
-                <th>Price</th>
-                <th>Warehouse</th>
-                <th>Tag Number</th>
-                <th>Quantity</th>
-                <!--<th>Add to Cart?</th>-->
-            </tr>
-        </thead>
-        <tbody>
-          {% for r in results %}
-              <tr>
-                  <td>{{r.id}}</td>
-                  <td>{{r.pnumber}}</td>
-                  <td>{{r.name}}</td>
-                  <!--<td>windshield wiper fluid</td>-->
-                  <td>{{r.price}}</td>
-                  <td>{{r.warehouseid}}</td>
-                  <td>{{r.tag_number}}</td>
-                  <td>{{r.quantity}}</td>
-                  <!--<td><i class="fa fa-cart-plus fa-lg" aria-hidden="true"></i></td>-->
-              </tr>
-          {% endfor %}
-        </tbody>
+    <p>Product search
+      <i>{{searchString}}</i> found below.</p>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product Id</th>
+          <th>Product Number</th>
+          <th>Product Name</th>
+          <!--<th>Keywords</th>-->
+          <th>Price</th>
+          <th>Warehouse</th>
+          <th>Tag Number</th>
+          <th>Quantity</th>
+          <!--<th>Add to Cart?</th>-->
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in results %}
+        <tr>
+          <td>{{r.id}}</td>
+          <td>{{r.pnumber}}</td>
+          <td>{{r.name}}</td>
+          <!--<td>windshield wiper fluid</td>-->
+          <td>{{r.price}}</td>
+          <td>{{r.warehouseid}}</td>
+          <td>{{r.tag_number}}</td>
+          <td>{{r.quantity}}</td>
+          <!--<td><i class="fa fa-cart-plus fa-lg" aria-hidden="true"></i></td>-->
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
+    {% endif %} {% if isSearching and not results %}
+    <p>No matching records for
+      <i>{{searchString}}</i>.</p>
     {% endif %}
-    {% if isSearching and not results %}
-      <p>No matching records for <i>{{searchString}}</i>.</p>
-    {% endif %}
-    </div>
-    <!--<br />
+  </div>
+  <!--<br />
     <div>
       <p><i>Can't find what you're looking for?</i> &nbsp; <button type="button" class="btn btn-info">Request Product</button></p>
     </div>-->
-</div> <!-- end div container-->
+</div>
+<!-- end div container-->
 {% endblock %}
