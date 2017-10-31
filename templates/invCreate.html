@@ -42,11 +42,10 @@
           </div>
         </div>
       </div>
-      <div class="row">
-
+      <div class="row" id="line_item">
         <div class="col-md-9 mb-3">
           <label for="validationDefault04">Product ID</label>
-          <input value="sm-65484" type="text" class="form-control" id="product" name="product" placeholder="" required>
+          <input value="sm-65484" type="text" class="form-control" id="product" name="lines[]" placeholder="" required>
           <div class="invalid-feedback">
             Please provide product part number.
           </div>
@@ -59,7 +58,8 @@
           </div>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <input class="btn btn-primary" type="button" value="Add another line" onClick="addLine('line_item');">
+      <button type="submit" class="btn btn-success">Submit</button>
     </form>
   </div><!-- END OF CONTAINER -->
   {% endblock %}

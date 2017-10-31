@@ -114,7 +114,7 @@ def invCreatePage():
 		# Multiple items not supported at this point
 		invoiceData.append({'customer':request.form['customer'], 
 		'seller':request.form['seller'], 'date':request.form['date'], 
-		'product':request.form['product'], 'qty':request.form['qty']})
+		'lines':request.form['lines'], 'qty':request.form['qty']})
 		# makeSale return struct [path, filename, file extension]
 		invoiceNumber = pg.makeSale(invoiceData)
 		
