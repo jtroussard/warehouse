@@ -25,7 +25,7 @@
     <!-- END ALERT NOTIFICATION -->
     
     <form method="POST" action="/invCreate">
-      <div class="row">
+      <div class="row" id="static_invoice_details">
         <div class="col-md-4 mb-3">
           <label for="validationDefault01">Customer ID</label>
           <input value=0 type="text" class="form-control" id="customer" name="customer" placeholder="" required>
@@ -42,23 +42,25 @@
           </div>
         </div>
       </div>
-      <div class="row" id="line_item">
+<div id="line_items" name="lines[]">
+  <div class="row" line=1 id="line_1">
         <div class="col-md-9 mb-3">
           <label for="validationDefault04">Product ID</label>
-          <input value="sm-65484" type="text" class="form-control" id="product" name="lines[]" placeholder="" required>
+          <input value="sm-65484" class="form-control" id="product" placeholder="" required="" type="text">
           <div class="invalid-feedback">
             Please provide product part number.
           </div>
         </div>
         <div class="col-md-3 mb-3">
           <label for="validationDefault05">Qty</label>
-          <input type="number" class="form-control" id="qty" name="qty" placeholder="" required>
+          <input class="form-control" id="qty" name="qty" placeholder="" required="" type="number">
           <div class="invalid-feedback">
             Please provide quantity.
           </div>
         </div>
-      </div>
-      <input class="btn btn-primary" type="button" value="Add another line" onClick="addLine('line_item');">
+        </div>
+        </div>
+      <input class="btn btn-primary" type="button" value="Add another line" onClick="addLine('line_items');">
       <button type="submit" class="btn btn-success">Submit</button>
     </form>
   </div><!-- END OF CONTAINER -->

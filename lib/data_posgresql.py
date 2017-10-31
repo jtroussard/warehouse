@@ -134,7 +134,7 @@ def makeSale(invoiceData):
 	# Insert sold row
 	soldData = [invoiceNumber, productid, invoiceData[0]['qty']]
 	query_string = "INSERT INTO sold (saleid, productid, quantity) VALUES (%s, %s, %s);"
-	results = execute_query(query_string, conn, select=False, args=(tuple(soldData)))
+	execute_query(query_string, conn, select=False, args=(tuple(soldData)))
 	
 	# Clean up return outcome
 	conn.close()
@@ -142,8 +142,7 @@ def makeSale(invoiceData):
 		return invoiceNumber
 	else:
 		return -1
-	print(results)
-	
+		
 # 
 def getProductPrice(part_number):
 	conn = connectToPostgres()
