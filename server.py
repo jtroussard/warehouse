@@ -10,6 +10,7 @@ from lib.User import User
 from lib.Role import Role
 from lib.transaction import processFile
 from flask import Flask, render_template, request, session
+from flask import send_file
 
 app = Flask(__name__)
 app.secret_key=binascii.hexlify(os.urandom(24)).decode()
@@ -93,6 +94,8 @@ def invCreatePage():
 	invoiceData = [] # list of dictionaries
 	invoiceNumber = -1 # Invoice data input integrity
 	inv_alert = ""
+	invoice_doc = None
+	inv_file_data = []
 	
 	#Session Check
 	if 'userName' in session:
@@ -112,11 +115,15 @@ def invCreatePage():
 		invoiceData.append({'customer':request.form['customer'], 
 		'seller':request.form['seller'], 'date':request.form['date'], 
 		'product':request.form['product'], 'qty':request.form['qty']})
+		# makeSale return struct [path, filename, file extension]
 		invoiceNumber = pg.makeSale(invoiceData)
+		
 		
 		if (invoiceNumber > 0):
 			# Create invoice doc
-			if invoice_factory.makeInvoice(invoiceData, invoiceNumber):
+			invoice_doc = invoice_factory.makeInvoice(invoiceData, invoiceNumber)
+			inv_file_data = invoice_doc
+			if invoice_doc:
 				inv_alert = "success"
 			else:
 				inv_alert = "failed" # On creation - see makeInvoice
@@ -130,7 +137,7 @@ def invCreatePage():
 			pass
 		else:
 			inv_alert = None
-	return render_template('invCreate.html', inv_alert=inv_alert, invoiceNumber=invoiceNumber, sessionUser=sessionUser)
+	return render_template('invCreate.html', inv_alert=inv_alert, invoiceNumber=invoiceNumber, invoice_doc=invoice_doc, inv_file_data=inv_file_data, sessionUser=sessionUser)
 
 # Renders search invoice form/page 
 @app.route('/invSearch', methods=['GET', 'POST'])
@@ -198,6 +205,26 @@ def accountsPage():
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	userList = pg.listAllUsersWithWarehouses()
 	return render_template('accounts.html', sessionUser=sessionUser, userList=userList)
+	
+#Displays a Products page to search for the products the company offers.
+@app.route('/invoices', methods=['GET'])
+def invoiceReturnPage():
+	invoiceData = [] # list of dictionaries
+	invoiceNumber = -1 # Invoice data input integrity
+	inv_alert = ""
+	invoice_doc = None
+	
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('invoice.html', sessionUser=sessionUser, attempted=False)
+	number = request.args.get('num', default = 1, type = str)
+	extension = request.args.get('ext', default = 1, type = str)
+	file = "invoices/" + number + extension
+	return send_file(file, as_attachment=True)
+	
 	
 	
 

@@ -1,0 +1,25 @@
+                                                              Business Name
+                                                            123 Main Street
+                                                                    Ashland
+                                                                         VA
+                                                                      23005
+                                                                  560555555
+TO:
+Customer Business Name
+0
+456 Customer Lane
+Fredericksburg
+VA
+22401
+
+
+               <BG Distributive Group Company Name> INVOICE                
+Invoice Number: 87                                                                         
+Date: Tue, 31 Oct 2017                                                           
+
+Description                        Part Number      Qty    Price    Total
+---------------------------------  -------------  -----  -------  -------
+Strange Liquid: Mechanic-in-a-Can  sm-65484           3     9.99    29.97
+
+
+                                                         Grand Total $29.97

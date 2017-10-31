@@ -10,14 +10,16 @@ __author__     = "Jacques Troussard"
 __date__       = "Sun Oct 29 2017"
 
 def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts where dict is line
-    result = True # Return value for validation
+    result = None # Return value for validation PRINTED INVOICE NUMBER (FILENAME)
     invoice_directory = "invoices/"
-    file_name = "{}{}-{}{}".format(invoice_directory, str(int(invoice_number) + 100), strftime("%m"), strftime("%y"))
+    file_name = "{}-{}{}".format(str(int(invoice_number) + 100), strftime("%m"), strftime("%y"))
+    file_ext = ".txt"
+    full_path = invoice_directory + file_name + file_ext
     # Think about error checking when opening a file
     # From Python Docs: 
     #   Open file and return a corresponding file object. If the file cannot be 
     #   opened, an OSError is raised.
-    output_file = open(file_name, "a")
+    output_file = open(full_path, "a")
     
     # Invoice formatting based on 8.5" x 11" paper with 0.5" margins (u,l,r,d)
     # - Paper width in monospaced size 12 font = 75
@@ -41,9 +43,7 @@ def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts wh
     cust_city = "Fredericksburg"
     cust_stat = "VA"
     cust_zipc = 22401
-    
     cust_details = [cust_bizn, cust_name, cust_addr, cust_city, cust_stat, cust_zipc]
-    
     
     invoice_header = "<BG Distributive Group Company Name> INVOICE"
     todays_date = strftime("%a, %d %b %Y")
@@ -93,4 +93,4 @@ def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts wh
         output_file.write("\n\n\n")
         output_file.write(table_footer)
             
-    return result
+    return [full_path, file_name, file_ext]

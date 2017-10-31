@@ -13,7 +13,7 @@
       <div class="row">
         {% if inv_alert == "success" %}
           <div class="alert alert-success" role="alert">
-            <strong>Success!</strong> Invoice # XXXX can be acccessed <a href="#">here</a>.
+            <strong>Success!</strong> Invoice # {{ inv_file_data[1] }} can be acccessed <a href= {{ "/invoices?num=" + inv_file_data[1] + "&ext=" + inv_file_data[2] }}>here</a>.
           </div>
         {% elif inv_alert == "failed" %}
           <div class="alert alert-warning" role="alert">
@@ -22,27 +22,29 @@
         {% endif %}
       </div>
     {% endif %}
+    <!-- END ALERT NOTIFICATION -->
     
     <form method="POST" action="/invCreate">
       <div class="row">
-        <div class="col-md-6 mb-3">
+        <div class="col-md-4 mb-3">
           <label for="validationDefault01">Customer ID</label>
           <input value=0 type="text" class="form-control" id="customer" name="customer" placeholder="" required>
         </div>
-        <div class="col-md-6 mb-3">
+        <div class="col-md-4 mb-3">
           <label for="validationDefault02">Seller</label>
           <input value ="jacques.troussard@gmail.com" type="text" class="form-control" id="seller" name="seller" placeholder="" required>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-md-3 mb-3">
+        <div class="col-md-4 mb-3">
           <label for="validationDefault03">Date</label>
           <input value="01/01/01" type="text" class="form-control" id="date" name="date" placeholder="" required>
           <div class="invalid-feedback">
             Please provide the date of sale.
           </div>
         </div>
-        <div class="col-md-6 mb-3">
+      </div>
+      <div class="row">
+
+        <div class="col-md-9 mb-3">
           <label for="validationDefault04">Product ID</label>
           <input value="sm-65484" type="text" class="form-control" id="product" name="product" placeholder="" required>
           <div class="invalid-feedback">
