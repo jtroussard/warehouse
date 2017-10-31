@@ -110,12 +110,10 @@ def invCreatePage():
 	if request.method == 'POST':
 		# Debugging stuff
 		tl.printDict(request.form)
-		
-		# Multiple items not supported at this point
+		#print(request.form.getlist('products[]'))
 		invoiceData.append({'customer':request.form['customer'], 
-		'seller':request.form['seller'], 'date':request.form['date'], 
-		'lines':request.form['lines'], 'qty':request.form['qty']})
-		# makeSale return struct [path, filename, file extension]
+		'seller':request.form['seller'], 'date':request.form['date'],
+		'products[]':request.form.getlist('products[]'), 'qtys[]':request.form.getlist('qtys[]')})
 		invoiceNumber = pg.makeSale(invoiceData)
 		
 		

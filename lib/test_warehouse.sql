@@ -126,3 +126,11 @@ INSERT INTO products VALUES (
 	9.99
 );
 
+INSERT INTO products VALUES (
+	1,
+	'sm-12345',
+	'Blue Stuff',
+	'Clean anything.',
+	0.59
+);
+

@@ -65,32 +65,35 @@ def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts wh
     output_file.write("\n\n{:^75}\nInvoice Number: {:<75}\nDate: {:<75}\n\n".format(invoice_header, invoice_number, todays_date))
     
     tabulate.PRESERVE_WHITESPACE = True
+    
     # Write Table
     table = []
-    for line in invoice_data:
-        # Tabulate line format - need to pad name somehow
+    line_item_count = len(invoice_data[0]["products[]"])
+    grand_total = 0
+    for index in range(line_item_count):
         tab_line = []
-        name = pg.getProductName(line['product'])[0]
+        part_number = invoice_data[0]["products[]"][index]
+        qty_sold = invoice_data[0]["qtys[]"][index]
+        
+        name = pg.getProductName(part_number)[0]
         if len(name) < 40:
             name = "{:<40}".format(name)
         elif len(name) > 42:
             name = "{}...".format(name[:37])
-            
         tab_line.append(name)
-        tab_line.append(line['product'])
-        tab_line.append(str(line['qty']))
-        tab_line.append(str(pg.getProductPrice(line['product'])))
-        tab_line.append(str(float(pg.getProductPrice(line['product'])) * int(line['qty'])))
+        tab_line.append(part_number) # Part Number
+        tab_line.append(str(qty_sold)) # Qty Sold
+        tab_line.append(str(pg.getProductPrice(part_number))) # Unit Price
+        line_total = float(pg.getProductPrice(part_number)) * int(qty_sold)
+        tab_line.append(str(line_total))
         table.append(tab_line)
-        output_file.write(tabulate(table, headers=["Description", "Part Number", "Qty", "Price", "Total"], tablefmt="simple", stralign="left", numalign="decimal"))
-
-        # Get product price and total
-        price = pg.getProductPrice(line['product'])
-        total = float(price) * int(line['qty'])
+        grand_total += line_total
         
-        # Print footer
-        table_footer = "{:>{offset}}{}".format("Grand Total $", total, offset=75-len(str(total)))
-        output_file.write("\n\n\n")
-        output_file.write(table_footer)
-            
+    output_file.write(tabulate(table, headers=["Description", "Part Number", "Qty", "Price", "Total"], tablefmt="simple", stralign="left", numalign="decimal"))
+
+    # Print footer
+    table_footer = "{:>{offset}}{}".format("Grand Total $", grand_total, offset=75-len(str(grand_total)))
+    output_file.write("\n\n\n")
+    output_file.write(table_footer)
+        
     return [full_path, file_name, file_ext]

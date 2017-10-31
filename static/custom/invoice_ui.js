@@ -1,5 +1,5 @@
     var counter = 1;
-    var limit = 3;
+    var limit = 10;
 
     function addLine(divName){
         // Testing only really
@@ -20,7 +20,7 @@
              // Child LEFT
              var prodInput = document.createElement("input");
              prodInput.setAttribute("class", "form-control");
-             prodInput.setAttribute("id", "product");
+             prodInput.setAttribute("name", "products[]");
              prodInput.setAttribute("required", "");
              prodInput.setAttribute("type", "text");
              
@@ -31,7 +31,7 @@
              // Child RIGHT
              var qntyInput = document.createElement("input");
              qntyInput.setAttribute("class", "form-control");
-             qntyInput.setAttribute("id", "qty");
+             qntyInput.setAttribute("name", "qtys[]");
              qntyInput.setAttribute("required", "");
              qntyInput.setAttribute("type", "number");
              
