@@ -32,9 +32,10 @@ def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts wh
     vendor_stat = "VA"
     vendor_vipc = 23005
     vendor_phon = 560555555
+    vendor_csz = vendor_city + ", " + vendor_stat + " " + str(vendor_vipc)
     
     # DO NOT CHANGE ORDER
-    vendor_details = [vendor_name, vendor_adr1, vendor_adr2, vendor_city, vendor_stat, vendor_vipc, vendor_phon]
+    vendor_details = [vendor_name, vendor_adr1, vendor_adr2, vendor_csz, vendor_phon]
     
     # Additional customer details need to banked in db
     cust_bizn = "Customer Business Name" # is_business boolean - can we add to db
@@ -43,7 +44,8 @@ def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts wh
     cust_city = "Fredericksburg"
     cust_stat = "VA"
     cust_zipc = 22401
-    cust_details = [cust_bizn, cust_name, cust_addr, cust_city, cust_stat, cust_zipc]
+    cust_csz = cust_city + ", " + cust_stat + " " + str(cust_zipc)
+    cust_details = [cust_bizn, cust_name, cust_addr, cust_csz]
     
     invoice_header = "<BG Distributive Group Company Name> INVOICE"
     todays_date = strftime("%a, %d %b %Y")
