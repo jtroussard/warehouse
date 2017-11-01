@@ -91,7 +91,7 @@ def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts wh
         table.append(tab_line)
         grand_total += line_total
         
-    output_file.write(tabulate(table, headers=["Description", "Part Number", "Qty", "Price", "Total"], tablefmt="simple", stralign="left", numalign="decimal"))
+    output_file.write(tabulate(table, headers=["Product Name", "Part Number", "Qty", "Price", "Total"], tablefmt="simple", stralign="left", numalign="decimal"))
 
     # Print footer
     table_footer = "{:>{offset}}{}".format("Grand Total $", grand_total, offset=75-len(str(grand_total)))
