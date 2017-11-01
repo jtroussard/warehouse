@@ -114,12 +114,10 @@ INSERT INTO users VALUES (
 );
 
 INSERT INTO customers VALUES (
-	0,
 	'George Washington'
 );
 
 INSERT INTO products VALUES (
-	0,
 	'sm-65484',
 	'Strange Liquid: Mechanic-in-a-Can',
 	'Fix anything. Pour in washer fluid reservoir. 8oz bottle',
@@ -133,4 +131,42 @@ INSERT INTO products VALUES (
 	'Clean anything.',
 	0.59
 );
+
+insert into warehouses (associate) values
+('main'),('taylor'),('sam'), ('jacques');
+
+insert into customers (name, description, address, contact) VALUES
+('autozone', 'large autoparts dealer', '123 street avenue, Fredericksburt, VA 22401', 'harvey wayne'),
+('yates', 'local garage', '456 road blvd, Alexandria, VA 22301', 'Bruce Dent'),
+('jiffy lube', 'nationwide garage', '789 lane way, Richmond, VA 22501', 'Darius McJohnson');
+
+insert into users (email, password, firstname, lastname, role) VALUES
+('tdohmen@mail.umw.edu', crypt('123', gen_salt('bf')), 'Taylor', 'Dohmen', 0),
+('smiller@mail.umw.edu', crypt('123', gen_salt('bf')), 'Samantha', 'Miller', 0),
+('jtroussard@mail.umw.edu',  crypt('123', gen_salt('bf')), 'Jacques', 'Troussard', 0);
+
+insert into sales (datesold, seller, customerid) VALUES
+('2017-01-01', 'tdohmen@mail.umw.edu', 1),
+('2017-06-06', 'smiller@mail.umw.edu', 2),
+('2017-11-11', 'jtroussard@mail.umw.edu', 3),
+('2002-04-22', 'tdohmen@mail.umw.edu', 3);
+
+insert into products (pnumber, name, price) values
+('1', 'blinker fluid', 111.11),
+('2', 'tire fluid', 222.22),
+('3', 'airbag fluid', 333.33),
+('4', 'radio fluid', 444.44),
+('5', 'headrest fluid', 555.55);
+
+insert into sold (saleid, productid, quantity) VALUES
+(1, 1, 10),
+(1, 4, 500),
+(2, 2, 20),
+(2, 3, 100),
+(3, 1, 1),
+(3, 2, 1),
+(3, 3, 1),
+(3, 4, 1),
+(3, 5, 1),
+(4, 3, 987);
 
