@@ -204,20 +204,16 @@ def accountsPage():
 	userList = pg.listAllUsersWithWarehouses()
 	return render_template('accounts.html', sessionUser=sessionUser, userList=userList)
 	
-#Displays a Products page to search for the products the company offers.
+# Returns generated invoice as attachment
 @app.route('/invoices', methods=['GET'])
 def invoiceReturnPage():
-	invoiceData = [] # list of dictionaries
-	invoiceNumber = -1 # Invoice data input integrity
-	inv_alert = ""
-	invoice_doc = None
-	
 	#Session Check
 	if 'userName' in session:
 		sessionUser = [session['userName'], session['email'], session['role']]
 	else:
 		sessionUser=['','','']
 		return render_template('invoice.html', sessionUser=sessionUser, attempted=False)
+
 	number = request.args.get('num', default = 1, type = str)
 	extension = request.args.get('ext', default = 1, type = str)
 	file = "invoices/" + number + extension
