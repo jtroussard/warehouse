@@ -9,8 +9,7 @@ from lib import invoice_factory
 from lib.User import User
 from lib.Role import Role
 from lib.transaction import processFile
-from flask import Flask, render_template, request, session
-from flask import send_file
+from flask import Flask, render_template, request, session, send_file
 
 app = Flask(__name__)
 app.secret_key=binascii.hexlify(os.urandom(24)).decode()
