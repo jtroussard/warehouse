@@ -5,16 +5,19 @@ import binascii
 from lib.config import *
 from lib import data_posgresql as pg
 from lib import tools as tl
+from lib import invoice_factory
 from lib.User import User
 from lib.Role import Role
 from lib.transaction import processFile
 from flask import Flask, render_template, request, session
+from flask import send_file
 
 app = Flask(__name__)
-#app.secret_key=os.urandom(24).encode('hex') 
 app.secret_key=binascii.hexlify(os.urandom(24)).decode()
-#app.secret_key=os.urandom(24).encode('hex') # gives attr error no encode for bytes keeping incase hexlify has issues on another machine
 #session variable: username (fullname), email
+
+# Error no encode for bytes keeping incase hexlify has issues on another machine
+#app.secret_key=os.urandom(24).encode('hex')
 
 #Root mapping
 @app.route('/', methods=['GET', 'POST'])
@@ -91,24 +94,38 @@ def invCreatePage():
 	invoiceData = [] # list of dictionaries
 	invoiceNumber = -1 # Invoice data input integrity
 	inv_alert = ""
+	invoice_doc = None
+	inv_file_data = []
+	
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','', '']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	if request.method == 'GET':
+		return render_template('invCreate.html', post=False, sessionUser=sessionUser)
 
 	# Create new invoice (sale)
 	if request.method == 'POST':
 		# Debugging stuff
 		tl.printDict(request.form)
-		
-		# Multiple items not supported at this point
+		#print(request.form.getlist('products[]'))
 		invoiceData.append({'customer':request.form['customer'], 
-		'seller':request.form['seller'], 'date':request.form['date'], 
-		'product':request.form['product'], 'qty':request.form['qty']})
+		'seller':request.form['seller'], 'date':request.form['date'],
+		'products[]':request.form.getlist('products[]'), 'qtys[]':request.form.getlist('qtys[]')})
 		invoiceNumber = pg.makeSale(invoiceData)
-		print(invoiceNumber)
-		
+
 		if (invoiceNumber > 0):
 			# Create invoice doc
-			inv_alert = "success"
+			invoice_doc = invoice_factory.makeInvoice(invoiceData, invoiceNumber)
+			inv_file_data = invoice_doc
+			if invoice_doc:
+				inv_alert = "success"
+			else:
+				inv_alert = "failed" # On creation - see makeInvoice
 		else:
-			inv_alert = "failed"
+			inv_alert = "failed" # On number generation - see makeSale
 		
 	if request.method == 'GET':
 		if (inv_alert == "success"):
@@ -117,8 +134,8 @@ def invCreatePage():
 			pass
 		else:
 			inv_alert = None
-	
-	return render_template('invCreate.html', inv_alert=inv_alert)
+
+	return render_template('invCreate.html', inv_alert=inv_alert, invoiceNumber=invoiceNumber, invoice_doc=invoice_doc, inv_file_data=inv_file_data, sessionUser=sessionUser)
 
 # Renders search invoice form/page 
 @app.route('/invSearch', methods=['GET', 'POST'])
@@ -129,6 +146,7 @@ def invDisplayPage():
 	else:
 		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+
 	results = []
 	if request.method == 'POST':
 		term = request.form.get('keyword')
@@ -136,6 +154,7 @@ def invDisplayPage():
 		end = request.form.get('end')
 		results = pg.invSearch(term, start, end)
 	return render_template('invSearch.html', sessionUser=sessionUser, results=results)
+
 
 #Displays a Products page to search for the products the company offers.
 @app.route('/products', methods=['GET', 'POST'])
@@ -173,7 +192,7 @@ def productsPage():
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString, sessionUser=sessionUser)
 
-# Renders search invoice form/page 
+#
 @app.route('/accounts')
 def accountsPage():
 	#Session Check
@@ -184,6 +203,26 @@ def accountsPage():
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	userList = pg.listAllUsersWithWarehouses()
 	return render_template('accounts.html', sessionUser=sessionUser, userList=userList)
+	
+#Displays a Products page to search for the products the company offers.
+@app.route('/invoices', methods=['GET'])
+def invoiceReturnPage():
+	invoiceData = [] # list of dictionaries
+	invoiceNumber = -1 # Invoice data input integrity
+	inv_alert = ""
+	invoice_doc = None
+	
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('invoice.html', sessionUser=sessionUser, attempted=False)
+	number = request.args.get('num', default = 1, type = str)
+	extension = request.args.get('ext', default = 1, type = str)
+	file = "invoices/" + number + extension
+	return send_file(file, as_attachment=True)
+	
 	
 	
 

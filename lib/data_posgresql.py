@@ -110,41 +110,67 @@ def makeSale(invoiceData):
 	conn = connectToPostgres()
 	if conn == None:
 		return None
-	
-	preOp = countInvoices()
-		
-	# Format/Type check data
-	# TODO
-	
-	# Get product id
-	# This is part of function testing and should not remain in final code
-	# This should be handled via format checking later on
-	productName = invoiceData[0]['product']
-	query_string = "SELECT id FROM products WHERE pnumber = %s;"
-	results = execute_query(query_string, conn, select=True, args=(productName,))
-	if results:
-		productid = results[0][0]
 
-	# Insert sale row - select set as true for returning id
+	preOp = countInvoices() # Used to confirm invoice hit server
+	# Insert sale row - select set as true for returning invoice number
 	saleData = [invoiceData[0]['date'], invoiceData[0]['seller'], invoiceData[0]['customer']]
 	query_string = "INSERT INTO sales (datesold, seller, customerid) VALUES (%s, %s, %s) RETURNING id;"
 	results = execute_query(query_string, conn, select=True, args=(tuple(saleData)))
 	invoiceNumber = results[0][0]
 	
-	# Insert sold row
-	soldData = [invoiceNumber, productid, invoiceData[0]['qty']]
-	query_string = "INSERT INTO sold (saleid, productid, quantity) VALUES (%s, %s, %s);"
-	results = execute_query(query_string, conn, select=False, args=(tuple(soldData)))
+	# Insert sold rows
+	line_item_count = len(invoiceData[0]["products[]"])
+	for index in range(line_item_count):
+		productid = getProductId(invoiceData[0]["products[]"][index], conn)
+		quantity = invoiceData[0]["qtys[]"][index]
+		
+		soldData = [invoiceNumber, productid, quantity]
+		query_string = "INSERT INTO sold (saleid, productid, quantity) VALUES (%s, %s, %s);"
+		execute_query(query_string, conn, select=False, args=(tuple(soldData)))
 	
 	# Clean up return outcome
 	conn.close()
-	
+
 	if (preOp < countInvoices()):
 		return invoiceNumber
 	else:
 		return -1
-	print(results)
 
+
+# 
+def getProductPrice(part_number):
+	conn = connectToPostgres()
+	if conn == None:
+		return None
+	
+	query_string = "SELECT price FROM products WHERE pnumber = %s;"
+	results = execute_query(query_string, conn, select=True, args=(part_number,))
+	if results:
+		return results[0][0]
+		
+# Return product name via part number
+# Ideally returns one result in list
+# results[0]
+def getProductName(part_number):
+	conn = connectToPostgres()
+	if conn == None:
+		return None
+	
+	query_string = "SELECT name FROM products WHERE pnumber = %s;"
+	results = execute_query(query_string, conn, select=True, args=(part_number,))
+	return results[0]
+	
+def getProductId(part_number, conn):
+	if conn == None:
+		return None	
+	
+	query_string = "SELECT id FROM products WHERE pnumber = %s;"
+	results = execute_query(query_string, conn, select=True, args=(part_number,))
+	if results:
+		productid = results[0][0]
+		return productid
+	return -1
+	
 # RETURN a list of rows with keys {id, datesold, assoc, cust, total}
 def invSearch(term, start, end):
 	term = '%{}%'.format(term)
