@@ -6,3 +6,6 @@
 
 # Ignore contents of local invoice storage directory
 /invoices/*
+
+# Ignore cloud 9 recovery files
+.~c9*
