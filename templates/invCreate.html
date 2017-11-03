@@ -7,7 +7,6 @@
         <p class="lead">Here you can create an invoice. Enter all necessary fields</p>
       </div>
     </div>
-    
     <!-- Alert notification -->
     {% if inv_alert %}
       <div class="row">
@@ -23,7 +22,6 @@
       </div>
     {% endif %}
     <!-- END ALERT NOTIFICATION -->
-    
     <form method="POST" action="/invCreate">
       <div class="row" id="static_invoice_details">
         <div class="col-md-4 mb-3">
@@ -35,11 +33,8 @@
           <input value ="jacques.troussard@gmail.com" type="text" class="form-control" id="seller" name="seller" placeholder="" required>
         </div>
         <div class="col-md-4 mb-3">
-          <label for="validationDefault03">Date</label>
-          <input value="01/01/01" type="text" class="form-control" id="date" name="date" placeholder="" required>
-          <div class="invalid-feedback">
-            Please provide the date of sale.
-          </div>
+          <label>Date</label>
+          <h2>{{ todays_date }}</h2>
         </div>
       </div>
 <div id="line_items" name="lines[]">
@@ -65,4 +60,3 @@
     </form>
   </div><!-- END OF CONTAINER -->
   {% endblock %}
-

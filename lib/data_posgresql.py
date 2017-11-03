@@ -110,7 +110,6 @@ def makeSale(invoiceData):
 	conn = connectToPostgres()
 	if conn == None:
 		return None
-
 	preOp = countInvoices() # Used to confirm invoice hit server
 	# Insert sale row - select set as true for returning invoice number
 	saleData = [invoiceData[0]['date'], invoiceData[0]['seller'], invoiceData[0]['customer']]
@@ -127,22 +126,18 @@ def makeSale(invoiceData):
 		soldData = [invoiceNumber, productid, quantity]
 		query_string = "INSERT INTO sold (saleid, productid, quantity) VALUES (%s, %s, %s);"
 		execute_query(query_string, conn, select=False, args=(tuple(soldData)))
-	
 	# Clean up return outcome
 	conn.close()
-
 	if (preOp < countInvoices()):
 		return invoiceNumber
 	else:
 		return -1
-
-
+		
 # 
 def getProductPrice(part_number):
 	conn = connectToPostgres()
 	if conn == None:
 		return None
-	
 	query_string = "SELECT price FROM products WHERE pnumber = %s;"
 	results = execute_query(query_string, conn, select=True, args=(part_number,))
 	if results:
@@ -155,7 +150,6 @@ def getProductName(part_number):
 	conn = connectToPostgres()
 	if conn == None:
 		return None
-	
 	query_string = "SELECT name FROM products WHERE pnumber = %s;"
 	results = execute_query(query_string, conn, select=True, args=(part_number,))
 	return results[0]
@@ -163,7 +157,6 @@ def getProductName(part_number):
 def getProductId(part_number, conn):
 	if conn == None:
 		return None	
-	
 	query_string = "SELECT id FROM products WHERE pnumber = %s;"
 	results = execute_query(query_string, conn, select=True, args=(part_number,))
 	if results:
