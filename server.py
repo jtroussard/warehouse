@@ -219,6 +219,7 @@ def invoiceReturnPage():
 		return render_template('invoice.html', sessionUser=sessionUser, attempted=False)
 	number = request.args.get('num', default = 1, type = str)
 	extension = request.args.get('ext', default = 1, type = str)
+	print(number, extension)
 	file = "invoices/" + number + extension
 	return send_file(file, as_attachment=True)
 

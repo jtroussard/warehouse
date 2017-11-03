@@ -44,11 +44,11 @@
           <td>{{r.assoc}}</td>
           <td>{{'$' ~ r.total}}</td>
           <td>
-            <button class="btn btn-default">
-              <i class="fa fa-arrow-down" aria-hidden="true">
-                <a href={{"/invoices?num=" + r.id|string + "&ext=" + ".txt" }}></a>
-              </i>
-            </button>
+            <a href={{ "/invoices?num=" + r.id|string + "&ext=" + ".txt" }}>
+              <button class="btn btn-default">
+                <i class="fa fa-arrow-down" aria-hidden="true"></i>
+              </button>
+            </a>
           </td>
         </tr>
         {% endfor %}
