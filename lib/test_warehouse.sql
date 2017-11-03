@@ -170,3 +170,20 @@ insert into sold (saleid, productid, quantity) VALUES
 (3, 5, 1),
 (4, 3, 987);
 
+/*
+1.
+get warehouse id associated with sales associate
+select w.id from users u left outer join warehouses w on u.email = w.associate returning w.id
+
+2.
+get qty of product from inventory associated with warehouse id
+select quantity from inventory where productid = ... AND warehouseid = ...;
+
+3.
+server side compare units sold with current stock return result
+- return alert if negative
+	- break
+- return warning if 0 (restock)
+	- process reconcilation
+	- update inventory set quantity = returned result where productid = ...;
+*/
