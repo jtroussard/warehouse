@@ -54,7 +54,11 @@ CREATE TABLE customers (
 	id serial NOT NULL PRIMARY KEY,
 	name TEXT NOT NULL,
 	description TEXT,
-	address TEXT,
+	address1 TEXT,
+	address2 TEXT,
+	city TEXT,
+	state TEXT,
+	zipcode INTEGER,
 	phone TEXT,
 	contact TEXT,
 	email text
@@ -97,48 +101,14 @@ GRANT SELECT, UPDATE ON
 TO whmanager;
 
 /* Adding dummy sales person for db testing */
-INSERT INTO users VALUES (
-	't.stark@stark-international.com', 
-	'password', 
-	'Tony', 
-	'Stark', 
-	0
-);
-
-INSERT INTO users VALUES (
-	'jacques.troussard@gmail.com',
-	crypt('jackdale', gen_salt('bf')),
-	'Jacques',
-	'Troussard',
-	0
-);
-
-INSERT INTO customers VALUES (
-	'George Washington'
-);
-
-INSERT INTO products VALUES (
-	'sm-65484',
-	'Strange Liquid: Mechanic-in-a-Can',
-	'Fix anything. Pour in washer fluid reservoir. 8oz bottle',
-	9.99
-);
-
-INSERT INTO products VALUES (
-	1,
-	'sm-12345',
-	'Blue Stuff',
-	'Clean anything.',
-	0.59
-);
 
 insert into warehouses (associate) values
 ('main'),('taylor'),('sam'), ('jacques');
 
-insert into customers (name, description, address, contact) VALUES
-('autozone', 'large autoparts dealer', '123 street avenue, Fredericksburt, VA 22401', 'harvey wayne'),
-('yates', 'local garage', '456 road blvd, Alexandria, VA 22301', 'Bruce Dent'),
-('jiffy lube', 'nationwide garage', '789 lane way, Richmond, VA 22501', 'Darius McJohnson');
+insert into customers (name, description, address1, city, state, zipcode, contact, phone, email) VALUES
+('autozone', 'large autoparts dealer', '123 street avenue', 'Fredericksburt', 'VA', 22401, 'harvey wayne', '0123456789', 'email@email.email'),
+('yates', 'local garage', '456 road blvd', 'Alexandria', 'VA', 22301, 'Bruce Dent', '0123456789', 'email@email.email'),
+('jiffy lube', 'nationwide garage', '789 lane way', 'Richmond', 'VA', 22501, 'Darius McJohnson', '0123456789', 'email@email.email');
 
 insert into users (email, password, firstname, lastname, role) VALUES
 ('tdohmen@mail.umw.edu', crypt('123', gen_salt('bf')), 'Taylor', 'Dohmen', 0),

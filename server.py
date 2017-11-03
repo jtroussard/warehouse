@@ -202,6 +202,17 @@ def accountsPage():
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	userList = pg.listAllUsersWithWarehouses()
 	return render_template('accounts.html', sessionUser=sessionUser, userList=userList)
+
+@app.route('/customers')
+def customersPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	custList = pg.getCustomers()
+	return render_template('customers.html', sessionUser=sessionUser, custList=custList)
 	
 # Returns generated invoice as attachment
 @app.route('/invoices', methods=['GET'])

@@ -207,3 +207,11 @@ def listAllUsersWithWarehouses():
   conn.close()
   print(result)
   return result
+
+
+def getCustomers():
+	db = connectToPostgres()
+	query = 'SELECT * FROM customers;'
+	result = execute_query(query, db, True, ())
+	db.close()
+	return result

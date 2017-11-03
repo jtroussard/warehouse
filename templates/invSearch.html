@@ -45,7 +45,9 @@
           <td>{{'$' ~ r.total}}</td>
           <td>
             <button class="btn btn-default">
-              <i class="fa fa-arrow-down" aria-hidden="true"></i>
+              <i class="fa fa-arrow-down" aria-hidden="true">
+                <a href={{"/invoices?num=" + r.id|string + "&ext=" + ".txt" }}></a>
+              </i>
             </button>
           </td>
         </tr>
