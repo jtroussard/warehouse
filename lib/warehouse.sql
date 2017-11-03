@@ -55,6 +55,11 @@ CREATE TABLE customers (
 	name TEXT NOT NULL,
 	description TEXT,
 	address TEXT,
+	address1 TEXT,
+	address2 TEXT,
+	city TEXT,
+	state TEXT,
+	zipcode INTEGER,
 	phone TEXT,
 	contact TEXT,
 	email text
