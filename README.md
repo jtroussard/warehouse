@@ -1,3 +1,8 @@
+# TODO
+Improve invoice alert to specifically identify the following input errors
+- product id does not exist (recognized by getProductId returning -1)
+
+
 # Warehouse Management System
 Warehouse Group 2: Samantha Miller, Jacques Troussard, Taylor Dohmen
 
