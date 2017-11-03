@@ -9,10 +9,10 @@ from tabulate import tabulate
 __author__     = "Jacques Troussard"
 __date__       = "Sun Oct 29 2017"
 
-def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts where dict is line
+def makeInvoice(invoice_data, invoice_number, date): # invoice_name - list of dicts where dict is line
     result = None # Return value for validation PRINTED INVOICE NUMBER (FILENAME)
     invoice_directory = "invoices/"
-    file_name = "{}-{}{}".format(str(int(invoice_number) + 100), strftime("%m"), strftime("%y"))
+    file_name = "{}".format(str(invoice_number))
     file_ext = ".txt"
     full_path = invoice_directory + file_name + file_ext
     # Think about error checking when opening a file
@@ -48,7 +48,7 @@ def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts wh
     cust_details = [cust_bizn, cust_name, cust_addr, cust_csz]
     
     invoice_header = "<BG Distributive Group Company Name> INVOICE"
-    todays_date = strftime("%a, %d %b %Y")
+    todays_date = date
     table_header = "product name             part number           qty    price    total amount" # 75 characters long
     
     # Write up to the table
@@ -76,7 +76,6 @@ def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts wh
         tab_line = []
         part_number = invoice_data[0]["products[]"][index]
         qty_sold = invoice_data[0]["qtys[]"][index]
-        
         name = pg.getProductName(part_number)[0]
         if len(name) < 40:
             name = "{:<40}".format(name)
@@ -90,7 +89,6 @@ def makeInvoice(invoice_data, invoice_number): # invoice_name - list of dicts wh
         tab_line.append(str(line_total))
         table.append(tab_line)
         grand_total += line_total
-        
     output_file.write(tabulate(table, headers=["Product Name", "Part Number", "Qty", "Price", "Total"], tablefmt="simple", stralign="left", numalign="decimal"))
 
     # Print footer

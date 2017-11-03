@@ -10,6 +10,8 @@ from lib.User import User
 from lib.Role import Role
 from lib.transaction import processFile
 from flask import Flask, render_template, request, session, send_file
+from time import strftime
+
 
 app = Flask(__name__)
 app.secret_key=binascii.hexlify(os.urandom(24)).decode()
@@ -95,7 +97,7 @@ def invCreatePage():
 	inv_alert = ""
 	invoice_doc = None
 	inv_file_data = []
-	
+	todays_date = strftime("%a, %d %b %Y")
 	#Session Check
 	if 'userName' in session:
 		sessionUser = [session['userName'], session['email'], session['role']]
@@ -103,21 +105,22 @@ def invCreatePage():
 		sessionUser=['','', '']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	if request.method == 'GET':
-		return render_template('invCreate.html', post=False, sessionUser=sessionUser)
-
+		if (inv_alert == "success"):
+			pass
+		elif (inv_alert == "failed"):
+			pass
+		else:
+			inv_alert = None
+		return render_template('invCreate.html', post=False,sessionUser=sessionUser, todays_date=todays_date)
 	# Create new invoice (sale)
 	if request.method == 'POST':
-		# Debugging stuff
-		tl.printDict(request.form)
-		#print(request.form.getlist('products[]'))
 		invoiceData.append({'customer':request.form['customer'], 
-		'seller':request.form['seller'], 'date':request.form['date'],
+		'seller':request.form['seller'], 'date':todays_date,
 		'products[]':request.form.getlist('products[]'), 'qtys[]':request.form.getlist('qtys[]')})
 		invoiceNumber = pg.makeSale(invoiceData)
-
 		if (invoiceNumber > 0):
 			# Create invoice doc
-			invoice_doc = invoice_factory.makeInvoice(invoiceData, invoiceNumber)
+			invoice_doc = invoice_factory.makeInvoice(invoiceData, invoiceNumber, todays_date)
 			inv_file_data = invoice_doc
 			if invoice_doc:
 				inv_alert = "success"
@@ -125,17 +128,11 @@ def invCreatePage():
 				inv_alert = "failed" # On creation - see makeInvoice
 		else:
 			inv_alert = "failed" # On number generation - see makeSale
-		
-	if request.method == 'GET':
-		if (inv_alert == "success"):
-			pass
-		elif (inv_alert == "failed"):
-			pass
-		else:
-			inv_alert = None
-
-	return render_template('invCreate.html', inv_alert=inv_alert, invoiceNumber=invoiceNumber, invoice_doc=invoice_doc, inv_file_data=inv_file_data, sessionUser=sessionUser)
-
+		print(inv_alert)
+		print(invoiceNumber)
+		print(inv_file_data)
+		print(todays_date)
+	return render_template('invCreate.html', inv_alert=inv_alert, invoiceNumber=invoiceNumber, inv_file_data=inv_file_data, todays_date=todays_date, sessionUser=sessionUser)
 # Renders search invoice form/page 
 @app.route('/invSearch', methods=['GET', 'POST'])
 def invDisplayPage():
@@ -145,7 +142,6 @@ def invDisplayPage():
 	else:
 		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
-
 	results = []
 	if request.method == 'POST':
 		term = request.form.get('keyword')
@@ -153,8 +149,6 @@ def invDisplayPage():
 		end = request.form.get('end')
 		results = pg.invSearch(term, start, end)
 	return render_template('invSearch.html', sessionUser=sessionUser, results=results)
-
-
 #Displays a Products page to search for the products the company offers.
 @app.route('/products', methods=['GET', 'POST'])
 def productsPage():
@@ -212,18 +206,12 @@ def invoiceReturnPage():
 	else:
 		sessionUser=['','','']
 		return render_template('invoice.html', sessionUser=sessionUser, attempted=False)
-
 	number = request.args.get('num', default = 1, type = str)
 	extension = request.args.get('ext', default = 1, type = str)
 	file = "invoices/" + number + extension
 	return send_file(file, as_attachment=True)
-	
-	
-	
-
 
 # start the server
 if __name__ == '__main__':
 	#app.run( host='0.0.0.0', port=80, debug=True) #For prod environment
     app.run(host=os.getenv('IP', '0.0.0.0'), port = int(os.getenv('PORT', 8080)), debug=True)
-	
