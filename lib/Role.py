@@ -4,3 +4,4 @@ class Role(Enum):
     ADMIN = 0
     MANAGER = 1
     SALES = 2
+    DEACTIVATED = 3

@@ -11,15 +11,9 @@ from lib.transaction import processFile
 from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
-<<<<<<< HEAD
-#app.secret_key=os.urandom(24).encode('hex') 
-app.secret_key=binascii.hexlify(os.urandom(32)).decode()
-#session variable: username (fullname), email, role
-=======
 app.secret_key=binascii.hexlify(os.urandom(24)).decode()
 #app.secret_key=os.urandom(24).encode('hex') # gives attr error no encode for bytes keeping incase hexlify has issues on another machine
 #session variable: username (fullname), email
->>>>>>> master
 
 #Root mapping
 @app.route('/', methods=['GET', 'POST'])
@@ -160,7 +154,7 @@ def productsPage():
 	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString, sessionUser=sessionUser)
 
 # Renders search invoice form/page 
-@app.route('/accounts')
+@app.route('/accounts', methods=['GET', 'POST'])
 def accountsPage():
 	#Session Check
 	if 'userName' in session:
@@ -168,11 +162,96 @@ def accountsPage():
 	else:
 		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	print(request)
+	accountUpdated = None
+	if request.method == 'POST':
+		print(request.form)
+		warehouseForEmp = ""
+		#Attempt account creation.
+		if request.form.get("accountCreate"):
+			accountUpdated = False;
+			print("accountCreate found")
+			firstname=request.form['firstname']
+			lastname=request.form['lastname']
+			email=request.form['email']
+			pwd=request.form['pwd']
+			role=request.form['role']
+			if request.form.get("warehouseForEmp") != None:
+				warehouseForEmp=request.form['warehouseForEmp']
+			newUser = pg.createUser(firstname, lastname, email, pwd, role)
+			if newUser:
+				accountUpdated = True
+				if warehouseForEmp:
+					pg.updateWarehouseAssociate(email, warehouseForEmp)
+		# elif request.form.get("accountUpdate"):
+		# 	print(request.form)
+		# 	firstname=request.form['firstname']
+		# 	lastname=request.form['lastname']
+		# 	email=request.form['email']
+		# 	if request.form.get("pwd") != None:
+		# 		pwd=request.form['pwd']
+		# 	role=request.form['role']
+		# 	warehouseForEmp=request.form['warehouseForEmp']
+		# 	print(firstname + " " + lastname + " " + email + " " + pwd + " " + role + " " + warehouseForEmp)
+		# 	userUpated = pg.updateUser(firstname, lastname, email, password, role)
+		
 	userList = pg.listAllUsersWithWarehouses()
-	return render_template('accounts.html', sessionUser=sessionUser, userList=userList)
-	
-	
+	warehouseList = pg.listAllWarehouses()
+	#Add a default to the warehouse list for users without a warehouse.
+	deactivated = ['-1', 'None']
+	warehouseList.insert(0, deactivated)
+	return render_template('accounts.html', sessionUser=sessionUser, userList=userList, warehouseList=warehouseList, accountUpdated=accountUpdated)
 
+@app.route('/accountCreate')
+def createAccount():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	warehouseList = pg.listAllWarehouses()
+	#Add a default to the warehouse list for users without a warehouse.
+	deactivated = ['-1', 'None']
+	warehouseList.insert(0, deactivated)
+	return render_template('accountCreate.html', sessionUser=sessionUser, warehouseList=warehouseList)
+	
+@app.route('/updateAccount', methods=['GET','POST'])
+def updateAccount():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	print(request)
+	accountUpdated = False
+	if request.method == 'POST':
+		accountUpdated = False
+		print(request.form)
+		firstname=request.form['firstname']
+		lastname=request.form['lastname']
+		email=request.form['email']
+		if request.form.get("pwd") != None:
+			pwd=request.form['pwd']
+		role=request.form['role']
+		warehouseForEmp=request.form['warehouseForEmp']
+		print("warehouseForEmp: " + warehouseForEmp)
+		#print(firstname + " " + lastname + " " + email + " " + pwd + " " + role + " " + warehouseForEmp)
+		userCreated = pg.updateUser(firstname, lastname, email, password, role)
+		if userCreated:
+			accountUpdated = True
+			if warehouseForEmp:
+				pg.updateWarehouseAssociate(email, warehouseForEmp)
+		
+	userList = pg.listAllUsersWithWarehouses()
+	warehouseList = pg.listAllWarehouses()
+	#Add a default to the warehouse list for users without a warehouse.
+	deactivated = ['-1', 'None']
+	warehouseList.insert(0, deactivated)
+	print("accountUpdated = " + accountUpdated)
+	return render_template('accountEdit.html', sessionUser=sessionUser, user=user, warehouseList=warehouseList, accountUpdated=accountUpdated)
+	
 
 # start the server
 if __name__ == '__main__':

@@ -143,8 +143,59 @@ def listAllUsersWithWarehouses():
   conn = connectToPostgres()
   if conn == None:
     return None
-  query_string = "SELECT u.firstname, u.lastname, u.email, u.role, u.password, w.id, w.tag_number from users u left outer join warehouses w on u.email = w.associate;"
+  query_string = "SELECT u.firstname, u.lastname, u.email, u.role, u.password, w.id, w.tag_number from users u left outer join warehouses w on u.email = w.associate ORDER BY email;"
   result = execute_query(query_string, conn)
+  conn.close()
+  return result
+
+#Selects a list of warehosues.
+def listAllWarehouses():
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  query_string = "SELECT id, make, model, tag_number from warehouses;"
+  result = execute_query(query_string, conn)
+  conn.close()
+  return result
+ 
+def createUser(firstname, lastname, email, password, role):
+	print(firstname + " " + lastname + " " + email + " " + password + " " + role)
+	conn = connectToPostgres()
+	if conn == None:
+	  return None
+	newEmailCheck = "SELECT firstname, lastname, email, role from users where email=%s;"
+	emailCheckResult = execute_query(newEmailCheck, conn, args=(email,))
+	print("emailCheckResult")
+	if not emailCheckResult:
+	  insert_user = "INSERT INTO users (firstname, lastname, email, password, role) VALUES (%s, %s, %s, crypt(%s, gen_salt('bf')), %s);"
+	  execute_query(insert_user, conn, select=False, args=(firstname, lastname, email, password, role))
+	  emailCheckResult = execute_query(newEmailCheck, conn, args=(email,))
+	else:
+		emailCheckResult = None
+	conn.close()
+	print(emailCheckResult)
+	return emailCheckResult
+
+#Updates user with new information.
+def updateUser(firstname, lastname, email, password, role):
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  pwdString = ""
+  query_string = "UPDATE users SET firstname=%s, lastname=%s, password=crypt(%s, password), role=%d, where email='%s';"
+  result = execute_query(query_string, conn, args=(firstname, lastname, password, role, email,))
+  print(result)
+  #query_string1 = "UPDATE warehouses SET associate=%s where id=%d;"
+  #result1 = execute_query(query_string1, conn, args=(email, id,))
   conn.close()
   print(result)
   return result
+
+
+#Updates user association to warehouse by id.
+def updateWarehouseAssociate(email, id):
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  query_string = "UPDATE warehouses SET associate=%s where id=%s;"
+  execute_query(query_string, conn, select=False, args=(email, id,))
