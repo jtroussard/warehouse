@@ -35,6 +35,11 @@
               <strong>Login failed!</strong> Email and Password didn't match! Try again.
             </div>
         {% endif %}
+        {% if deactivated %}
+            <div class="alert alert-danger" role="alert">
+              <strong>Login failed!</strong> Your account has been deactivated. Please contact your manager for additional details.
+            </div>
+        {% endif %}
     
     {% endif %}
     </div>
