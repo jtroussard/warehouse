@@ -1,0 +1,75 @@
+{% extends "layout.html" %} {% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-sm-12">
+			<h1 class="mt-5">Accounts</h1>
+			<p class="lead">Manage user accounts for the Warehouse Management System.</p>
+
+			{% if status != None %}
+			<div class="row">
+				{% if status == "success" %}
+				<div class="alert alert-success" role="alert">
+					<strong>Success!</strong> The customer was updated/created.
+				</div>
+				{% elif status == "failure" %}
+				<div class="alert alert-warning" role="alert">
+					<strong>Failed!</strong> Something went wrong and customer was not updated/created.
+				</div>
+				{% endif %}
+			</div>
+			{% endif %}
+
+			<form method="POST" action="/newCust">
+				<button type="submit" class="btn btn-primary">New Customer</button>
+			</form>
+			<br/>
+			<div class="currentUsers">
+				<h2>Current Customers </h2>
+				{% if custList != None and custList|length > 0 %}
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Description</th>
+							<th>Address</th>
+							<th>Contact</th>
+							<th>Phone</th>
+							<th>Email</th>
+							<th>Update?</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for c in custList %}
+						<form method="POST" action="/custEdit">
+							<input type="hidden" name="id" value="{{c.id}}" />
+							<tr>
+								<td>{{c.name}}</td>
+								<td>{{c.description}}</td>
+								{% if c.address2 == None %}
+								<td>{{c.address1 + ', ' + c.city + ', ' + c.state + ' ' + c.zipcode|string}}</td>
+								{% else %}
+								<td>{{c.address1 + ' ' + c.address2 + ', ' + c.city + ', ' + c.state + ' ' + c.zipcode|string}}</td>
+								{% endif %}
+								<td>{{c.contact}}</td>
+								<td>{{c.phone}}</td>
+								<td>{{c.email}}</td>
+								<td>
+									<button type="submit" class="btn btn-info">
+										Update
+									</button>
+								</td>
+							</tr>
+						</form>
+						{% endfor %}
+					</tbody>
+				</table>
+				{% else %}
+				<p>No users found.</p>
+				{% endif %}
+			</div>
+			<!--end currentUsers div-->
+		</div>
+	</div>
+</div>
+<!-- end div container-->
+{% endblock %}

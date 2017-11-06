@@ -204,7 +204,57 @@ def listAllUsersWithWarehouses():
 
 def getCustomers():
 	db = connectToPostgres()
-	query = 'SELECT * FROM customers;'
+	query = 'SELECT * FROM customers ORDER BY name;'
 	result = execute_query(query, db, True, ())
 	db.close()
 	return result
+
+def getCust(ID):
+	db = connectToPostgres()
+	query = 'SELECT * FROM customers WHERE id = %s;'
+	result = execute_query(query, db, True, (ID,))
+	db.close()
+	return result[0]
+
+def updateCust(data):
+	db = connectToPostgres()
+	query = '''UPDATE customers SET
+		name = %s,
+		description = %s,
+		address1 = %s,
+		address2 = %s,
+		city = %s,
+		state = %s,
+		zipcode = %s,
+		phone = %s,
+		contact = %s,
+		email = %s WHERE id = %s;'''
+	args = (data['name'],
+		data['description'],
+		data['address1'],
+		data['address2'],
+		data['city'],
+		data['state'],
+		data['zipcode'],
+		data['phone'],
+		data['contact'],
+		data['email'],
+		data['id'])
+	execute_query(query, db, False, args)
+
+def createCust(data):
+	db = connectToPostgres()
+	query = '''INSERT INTO customers
+	(name, description, address1, address2, city, state, zipcode, phone, contact, email)
+	 VAlUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'''
+	args = (data['name'],
+		data['description'],
+		data['address1'],
+		data['address2'],
+		data['city'],
+		data['state'],
+		int(data['zipcode']),
+		data['phone'],
+		data['contact'],
+		data['email'])
+	execute_query(query, db, False, args)

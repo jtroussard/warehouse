@@ -9,7 +9,7 @@ from lib import invoice_factory
 from lib.User import User
 from lib.Role import Role
 from lib.transaction import processFile
-from flask import Flask, render_template, request, session, send_file
+from flask import Flask, render_template, request, session, send_file, redirect, url_for
 from time import strftime
 
 
@@ -77,7 +77,7 @@ def importPage():
 #Displays the Invoice page to create and displays invoices	
 @app.route('/invoice')
 def invoicePage():
-	count = 0;
+	count = 0
 	# 
 	if request.method == 'GET':
 		count = pg.countInvoices()
@@ -133,6 +133,7 @@ def invCreatePage():
 		print(inv_file_data)
 		print(todays_date)
 	return render_template('invCreate.html', inv_alert=inv_alert, invoiceNumber=invoiceNumber, inv_file_data=inv_file_data, todays_date=todays_date, sessionUser=sessionUser)
+
 # Renders search invoice form/page 
 @app.route('/invSearch', methods=['GET', 'POST'])
 def invDisplayPage():
@@ -149,6 +150,7 @@ def invDisplayPage():
 		end = request.form.get('end')
 		results = pg.invSearch(term, start, end)
 	return render_template('invSearch.html', sessionUser=sessionUser, results=results)
+
 #Displays a Products page to search for the products the company offers.
 @app.route('/products', methods=['GET', 'POST'])
 def productsPage():
@@ -197,7 +199,7 @@ def accountsPage():
 	userList = pg.listAllUsersWithWarehouses()
 	return render_template('accounts.html', sessionUser=sessionUser, userList=userList)
 
-@app.route('/customers')
+@app.route('/customers', methods=['GET', 'POST'])
 def customersPage():
 	#Session Check
 	if 'userName' in session:
@@ -205,8 +207,44 @@ def customersPage():
 	else:
 		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	updateStatus = None
+	if request.method == 'POST' and 'id' in request.form:
+		updateStatus = 'success'
+		try:
+			pg.updateCust(request.form)
+		except Exception as e:
+			print(e)
+			updateStatus = 'failure'
+	if request.method == 'POST' and 'id' not in request.form:
+		updateStatus = 'success'
+		try:
+			pg.createCust(request.form)
+		except Exception as e:
+			print(e)
+			updateStatus = 'failure'
 	custList = pg.getCustomers()
-	return render_template('customers.html', sessionUser=sessionUser, custList=custList)
+	return render_template('customers.html', sessionUser=sessionUser, custList=custList, status=updateStatus)
+
+@app.route('/newCust', methods=['GET', 'POST'])
+def newCustPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	return render_template('newCust.html', sessionUser=sessionUser)	
+
+@app.route('/custEdit', methods=['GET', 'POST'])
+def custEditPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	cust = pg.getCust(request.form['id'])
+	return render_template('custEdit.html', sessionUser=sessionUser, c=cust)
 	
 # Returns generated invoice as attachment
 @app.route('/invoices', methods=['GET'])
