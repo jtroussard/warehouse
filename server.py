@@ -171,15 +171,16 @@ def accountsPage():
 	#check role can access page.
 	if sessionUser[2] == 2:
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
-	print(request)
 	accountUpdated = None
 	if request.method == 'POST':
-		print(request.form)
+		#Hidden input formType is either accountCreate or accountEdit
+		formType = request.form['formType']
+		accountUpdated = False
+		print("FormType: " + formType)
 		warehouseForEmp = ""
+		pwd = ""
 		#Attempt account creation.
-		if request.form.get("accountCreate"):
-			accountUpdated = False;
-			print("accountCreate found")
+		if formType == "accountCreate":
 			firstname=request.form['firstname']
 			lastname=request.form['lastname']
 			email=request.form['email']
@@ -190,20 +191,21 @@ def accountsPage():
 			newUser = pg.createUser(firstname, lastname, email, pwd, role)
 			if newUser:
 				accountUpdated = True
-				if warehouseForEmp:
-					pg.updateWarehouseAssociate(email, warehouseForEmp)
-		# elif request.form.get("accountUpdate"):
-		# 	print(request.form)
-		# 	firstname=request.form['firstname']
-		# 	lastname=request.form['lastname']
-		# 	email=request.form['email']
-		# 	if request.form.get("pwd") != None:
-		# 		pwd=request.form['pwd']
-		# 	role=request.form['role']
-		# 	warehouseForEmp=request.form['warehouseForEmp']
-		# 	print(firstname + " " + lastname + " " + email + " " + pwd + " " + role + " " + warehouseForEmp)
-		# 	userUpated = pg.updateUser(firstname, lastname, email, password, role)
-		
+				pg.updateWarehouseAssociate(email, warehouseForEmp)
+		elif formType == "accountEdit":
+			accountUpdated = False
+			firstname=request.form['firstname']
+			lastname=request.form['lastname']
+			email=request.form['email']
+			if request.form.get("pwd") != None:
+				pwd=request.form['pwd']
+			role=request.form['role']
+			if request.form.get("warehouseForEmp") != None:
+				warehouseForEmp=request.form['warehouseForEmp']
+			userUpdated = pg.updateUser(firstname, lastname, email, pwd, role)
+			if userUpdated:
+				accountUpdated = True
+				pg.updateWarehouseAssociate(email, warehouseForEmp)
 	userList = pg.listAllUsersWithWarehouses()
 	warehouseList = pg.listAllWarehouses()
 	#Add a default to the warehouse list for users without a warehouse.
@@ -228,44 +230,29 @@ def createAccount():
 	warehouseList.insert(0, deactivated)
 	return render_template('accountCreate.html', sessionUser=sessionUser, warehouseList=warehouseList)
 	
-# @app.route('/updateAccount', methods=['GET','POST'])
-# def updateAccount():
-# 	#Session Check
-# 	if 'userName' in session:
-# 		sessionUser = [session['userName'], session['email'], session['role']]
-# 	else:
-# 		sessionUser=['','','']
-# 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
-# 	#check role can access page.
-# 	if sessionUser[2] == 2:
-# 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
-# 	print(request)
-# 	accountUpdated = False
-# 	if request.method == 'POST':
-# 		accountUpdated = False
-# 		print(request.form)
-# 		firstname=request.form['firstname']
-# 		lastname=request.form['lastname']
-# 		email=request.form['email']
-# 		if request.form.get("pwd") != None:
-# 			pwd=request.form['pwd']
-# 		role=request.form['role']
-# 		warehouseForEmp=request.form['warehouseForEmp']
-# 		print("warehouseForEmp: " + warehouseForEmp)
-# 		#print(firstname + " " + lastname + " " + email + " " + pwd + " " + role + " " + warehouseForEmp)
-# 		userCreated = pg.updateUser(firstname, lastname, email, password, role)
-# 		if userCreated:
-# 			accountUpdated = True
-# 			if warehouseForEmp:
-# 				pg.updateWarehouseAssociate(email, warehouseForEmp)
-		
-# 	userList = pg.listAllUsersWithWarehouses()
-# 	warehouseList = pg.listAllWarehouses()
-# 	#Add a default to the warehouse list for users without a warehouse.
-# 	deactivated = ['-1', 'None']
-# 	warehouseList.insert(0, deactivated)
-# 	print("accountUpdated = " + accountUpdated)
-# 	return render_template('accountEdit.html', sessionUser=sessionUser, user=user, warehouseList=warehouseList, accountUpdated=accountUpdated)
+@app.route('/accountUpdate', methods=['GET','POST'])
+def accountUpdate():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	#check role can access page.
+	if sessionUser[2] == 2:
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	print(request)
+	user = None
+	if request.method == 'POST':
+		if request.form.get("userToUpdate") != None:
+			email=request.form['userToUpdate']
+			user = pg.listUserandWarehouseByEmail(email)
+	warehouseList = pg.listAllWarehouses()
+	#Add a default to the warehouse list for users without a warehouse.
+	deactivated = ['-1', 'None']
+	warehouseList.insert(0, deactivated)
+	# print("accountUpdated = " + accountUpdated)
+	return render_template('accountEdit.html', sessionUser=sessionUser, user=user, warehouseList=warehouseList)
 	
 
 # start the server

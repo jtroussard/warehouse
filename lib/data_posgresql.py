@@ -147,19 +147,31 @@ def listAllUsersWithWarehouses():
   result = execute_query(query_string, conn)
   conn.close()
   return result
+  
+#Selects all user information and warehouse info as needed, given an email.
+def listUserandWarehouseByEmail(email):
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  query_string = "SELECT u.firstname, u.lastname, u.email, u.role, w.id, w.tag_number from users u left outer join warehouses w on u.email = w.associate WHERE email like %s;"
+  results = execute_query(query_string, conn, args=(email,))
+  conn.close()
+  if results:
+  	result = results[0]
+  print(result)
+  return result
 
 #Selects a list of warehosues.
 def listAllWarehouses():
   conn = connectToPostgres()
   if conn == None:
     return None
-  query_string = "SELECT id, make, model, tag_number from warehouses;"
+  query_string = "SELECT id, make, model, tag_number from warehouses ORDER BY id;"
   result = execute_query(query_string, conn)
   conn.close()
   return result
  
 def createUser(firstname, lastname, email, password, role):
-	print(firstname + " " + lastname + " " + email + " " + password + " " + role)
 	conn = connectToPostgres()
 	if conn == None:
 	  return None
@@ -178,18 +190,28 @@ def createUser(firstname, lastname, email, password, role):
 
 #Updates user with new information.
 def updateUser(firstname, lastname, email, password, role):
-  conn = connectToPostgres()
-  if conn == None:
-    return None
-  pwdString = ""
-  query_string = "UPDATE users SET firstname=%s, lastname=%s, password=crypt(%s, password), role=%d, where email='%s';"
-  result = execute_query(query_string, conn, args=(firstname, lastname, password, role, email,))
-  print(result)
-  #query_string1 = "UPDATE warehouses SET associate=%s where id=%d;"
-  #result1 = execute_query(query_string1, conn, args=(email, id,))
-  conn.close()
-  print(result)
-  return result
+	conn = connectToPostgres()
+	if conn == None:
+		return None
+	result = None
+	if password:
+		print("Test if")
+		query_string = "UPDATE users SET firstname=%s, lastname=%s, password=crypt(%s, password), role=%s where email=%s;"
+		execute_query(query_string, conn, select=False, args=(firstname, lastname, password, role, email,))
+	else: 
+	#No password udpate.
+		print("Test else")
+		query_string = "UPDATE users SET firstname=%s, lastname=%s, role=%s where email=%s;"
+		execute_query(query_string, conn, select=False, args=(firstname, lastname, role, email))
+	#Check the update was successful
+	if password:
+		query_string = "SELECT firstname, lastname, email, role from users where firstname=%s and lastname=%s and email=%s and password=crypt(%s, password) and role=%s;"
+		result = execute_query(query_string, conn, args=(firstname, lastname, email, password, role,))
+	else:
+		query_string = "SELECT firstname, lastname, email, role from users where firstname=%s and lastname=%s and email=%s and role=%s;"
+		result = execute_query(query_string, conn, args=(firstname, lastname, email, role,))
+	conn.close()
+	return result
 
 
 #Updates user association to warehouse by id.
@@ -197,5 +219,9 @@ def updateWarehouseAssociate(email, id):
   conn = connectToPostgres()
   if conn == None:
     return None
-  query_string = "UPDATE warehouses SET associate=%s where id=%s;"
-  execute_query(query_string, conn, select=False, args=(email, id,))
+  query_clear = "UPDATE warehouses SET associate='' where associate=%s;"
+  execute_query(query_clear, conn, select=False, args=(email,))
+  if id:
+  	query_string = "UPDATE warehouses SET associate=%s where id=%s;"
+  	execute_query(query_string, conn, select=False, args=(email, id,))
+  conn.close()
