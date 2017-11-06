@@ -160,6 +160,20 @@ def productsPage():
 	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString, sessionUser=sessionUser)
 
 # Renders search invoice form/page 
+@app.route('/admin', methods=['GET', 'POST'])
+def adminPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	#check role can access page.
+	if sessionUser[2] == 2:
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	return render_template('admin.html', sessionUser=sessionUser)
+
+# Renders search invoice form/page 
 @app.route('/accounts', methods=['GET', 'POST'])
 def accountsPage():
 	#Session Check

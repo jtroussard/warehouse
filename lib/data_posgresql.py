@@ -177,7 +177,6 @@ def createUser(firstname, lastname, email, password, role):
 	  return None
 	newEmailCheck = "SELECT firstname, lastname, email, role from users where email=%s;"
 	emailCheckResult = execute_query(newEmailCheck, conn, args=(email,))
-	print("emailCheckResult")
 	if not emailCheckResult:
 	  insert_user = "INSERT INTO users (firstname, lastname, email, password, role) VALUES (%s, %s, %s, crypt(%s, gen_salt('bf')), %s);"
 	  execute_query(insert_user, conn, select=False, args=(firstname, lastname, email, password, role))
@@ -185,7 +184,6 @@ def createUser(firstname, lastname, email, password, role):
 	else:
 		emailCheckResult = None
 	conn.close()
-	print(emailCheckResult)
 	return emailCheckResult
 
 #Updates user with new information.
@@ -195,12 +193,10 @@ def updateUser(firstname, lastname, email, password, role):
 		return None
 	result = None
 	if password:
-		print("Test if")
 		query_string = "UPDATE users SET firstname=%s, lastname=%s, password=crypt(%s, password), role=%s where email=%s;"
 		execute_query(query_string, conn, select=False, args=(firstname, lastname, password, role, email,))
 	else: 
 	#No password udpate.
-		print("Test else")
 		query_string = "UPDATE users SET firstname=%s, lastname=%s, role=%s where email=%s;"
 		execute_query(query_string, conn, select=False, args=(firstname, lastname, role, email))
 	#Check the update was successful
