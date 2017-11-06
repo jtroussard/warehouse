@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS sales CASCADE;
 DROP SEQUENCE IF EXISTS sales_id_seq;
 DROP TABLE IF EXISTS sold CASCADE;
 
-CREATE EXTENSION pycrypto;
+CREATE EXTENSION pgcrypto;
 
 CREATE TABLE warehouses (
 	id serial NOT NULL PRIMARY KEY,
@@ -55,6 +55,11 @@ CREATE TABLE customers (
 	name TEXT NOT NULL,
 	description TEXT,
 	address TEXT,
+	address1 TEXT,
+	address2 TEXT,
+	city TEXT,
+	state TEXT,
+	zipcode INTEGER,
 	phone TEXT,
 	contact TEXT,
 	email text

@@ -123,7 +123,7 @@ def validate(line, data, lastProduct, lastWarehouse, db, cache, pnums):
 
 # if operation B is dependent on operation A -> A should preceed B in the file
 # RETURNS LIST OF ERROR STRINGS IF UNSUCCESFULL
-# RETURNS None ON SUCCESS
+# RETURNS [] ON SUCCESS
 def processFile(csvName):
 	db = connectToPostgres()
 	cursor = db.cursor()
