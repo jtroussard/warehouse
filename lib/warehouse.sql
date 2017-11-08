@@ -54,7 +54,6 @@ CREATE TABLE customers (
 	id serial NOT NULL PRIMARY KEY,
 	name TEXT NOT NULL,
 	description TEXT,
-	address TEXT,
 	address1 TEXT,
 	address2 TEXT,
 	city TEXT,

@@ -195,8 +195,140 @@ def listAllUsersWithWarehouses():
   conn = connectToPostgres()
   if conn == None:
     return None
-  query_string = "SELECT u.firstname, u.lastname, u.email, u.role, u.password, w.id, w.tag_number from users u left outer join warehouses w on u.email = w.associate;"
+  query_string = "SELECT u.firstname, u.lastname, u.email, u.role, u.password, w.id, w.tag_number from users u left outer join warehouses w on u.email = w.associate ORDER BY email;"
   result = execute_query(query_string, conn)
   conn.close()
-  print(result)
   return result
+  
+#Selects all user information and warehouse info as needed, given an email.
+def listUserandWarehouseByEmail(email):
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  query_string = "SELECT u.firstname, u.lastname, u.email, u.role, w.id, w.tag_number from users u left outer join warehouses w on u.email = w.associate WHERE email like %s;"
+  results = execute_query(query_string, conn, args=(email,))
+  conn.close()
+  if results:
+  	result = results[0]
+  return result
+
+#Selects a list of warehosues.
+def listAllWarehouses():
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  query_string = "SELECT id, make, model, tag_number from warehouses ORDER BY id;"
+  result = execute_query(query_string, conn)
+  conn.close()
+  return result
+ 
+def createUser(firstname, lastname, email, password, role):
+	conn = connectToPostgres()
+	if conn == None:
+	  return None
+	newEmailCheck = "SELECT firstname, lastname, email, role from users where email=%s;"
+	emailCheckResult = execute_query(newEmailCheck, conn, args=(email,))
+	if not emailCheckResult:
+	  insert_user = "INSERT INTO users (firstname, lastname, email, password, role) VALUES (%s, %s, %s, crypt(%s, gen_salt('bf')), %s);"
+	  execute_query(insert_user, conn, select=False, args=(firstname, lastname, email, password, role))
+	  emailCheckResult = execute_query(newEmailCheck, conn, args=(email,))
+	else:
+		emailCheckResult = None
+	conn.close()
+	return emailCheckResult
+
+#Updates user with new information.
+def updateUser(firstname, lastname, email, password, role):
+	conn = connectToPostgres()
+	if conn == None:
+		return None
+	result = None
+	if password:
+		query_string = "UPDATE users SET firstname=%s, lastname=%s, password=crypt(%s, password), role=%s where email=%s;"
+		execute_query(query_string, conn, select=False, args=(firstname, lastname, password, role, email,))
+	else: 
+	#No password udpate.
+		query_string = "UPDATE users SET firstname=%s, lastname=%s, role=%s where email=%s;"
+		execute_query(query_string, conn, select=False, args=(firstname, lastname, role, email))
+	#Check the update was successful
+	if password:
+		query_string = "SELECT firstname, lastname, email, role from users where firstname=%s and lastname=%s and email=%s and password=crypt(%s, password) and role=%s;"
+		result = execute_query(query_string, conn, args=(firstname, lastname, email, password, role,))
+	else:
+		query_string = "SELECT firstname, lastname, email, role from users where firstname=%s and lastname=%s and email=%s and role=%s;"
+		result = execute_query(query_string, conn, args=(firstname, lastname, email, role,))
+	conn.close()
+	return result
+
+
+#Updates user association to warehouse by id.
+def updateWarehouseAssociate(email, id):
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  query_clear = "UPDATE warehouses SET associate='' where associate=%s;"
+  execute_query(query_clear, conn, select=False, args=(email,))
+  if id:
+  	query_string = "UPDATE warehouses SET associate=%s where id=%s;"
+  	execute_query(query_string, conn, select=False, args=(email, id,))
+  conn.close()
+
+
+def getCustomers():
+	db = connectToPostgres()
+	query = 'SELECT * FROM customers ORDER BY name;'
+	result = execute_query(query, db, True, ())
+	db.close()
+	return result
+
+def getCust(ID):
+	db = connectToPostgres()
+	query = 'SELECT * FROM customers WHERE id = %s;'
+	result = execute_query(query, db, True, (ID,))
+	db.close()
+	return result[0]
+
+def updateCust(data):
+	db = connectToPostgres()
+	query = '''UPDATE customers SET
+		name = %s,
+		description = %s,
+		address1 = %s,
+		address2 = %s,
+		city = %s,
+		state = %s,
+		zipcode = %s,
+		phone = %s,
+		contact = %s,
+		email = %s WHERE id = %s;'''
+	args = (data['name'],
+		data['description'],
+		data['address1'],
+		data['address2'],
+		data['city'],
+		data['state'],
+		data['zipcode'],
+		data['phone'],
+		data['contact'],
+		data['email'],
+		data['id'])
+	execute_query(query, db, False, args)
+	db.close()
+
+def createCust(data):
+	db = connectToPostgres()
+	query = '''INSERT INTO customers
+	(name, description, address1, address2, city, state, zipcode, phone, contact, email)
+	 VAlUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);'''
+	args = (data['name'],
+		data['description'],
+		data['address1'],
+		data['address2'],
+		data['city'],
+		data['state'],
+		int(data['zipcode']),
+		data['phone'],
+		data['contact'],
+		data['email'])
+	execute_query(query, db, False, args)
+	db.close()

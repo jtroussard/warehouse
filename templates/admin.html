@@ -1,0 +1,32 @@
+{% extends "layout.html" %} {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="mt-5">Admin Dashboard</h1>
+            <p class="lead">Create and update accounts and warehoues.</p>
+                <div class="row">
+                  <div class="col-sm-6">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4 class="card-title">User Accounts</h4>
+                        <p class="card-text">Create and update user information.</p>
+                        <a href="/accounts" class="btn btn-primary">Accounts</a>
+                      </div>
+                    </div>
+                  </div>
+                  <!--<div class="col-sm-6">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4 class="card-title">Warehouses</h4>
+                        <p class="card-text">Add warehouses to the system to hold your inventory.</p>
+                        <a href="#" class="btn btn-primary">Warehouses</a>
+                      </div>
+                    </div>
+                  </div>-->
+                </div>
+        </div>
+    </div>
+    <!--end currentUsers div-->
+</div>
+<!-- end div container-->
+{% endblock %}

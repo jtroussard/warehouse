@@ -9,7 +9,7 @@ from lib import invoice_factory
 from lib.User import User
 from lib.Role import Role
 from lib.transaction import processFile
-from flask import Flask, render_template, request, session, send_file
+from flask import Flask, render_template, request, session, send_file, redirect, url_for
 from time import strftime
 
 
@@ -26,6 +26,7 @@ def mainIndex():
 	user = None
 	attempted = False
 	sessionUser=['','', '']
+	deactivated = False
 	#Log in user
 	if request.method == 'POST':
 		attempted = True
@@ -33,16 +34,21 @@ def mainIndex():
 		pwd=request.form['pwd']
 		query = pg.logIn(email, pwd)
 		if query != None  and len(query) > 0:
-			user = User(query[0], query[1], query[2], query[3])
-			session['userName'] = user.firstname
-			session['email'] = user.email
-			session['role'] = user.role.value
+			#Check for deactivated status.
+			if query[3] == 3:
+				deactivated = True
+				attempted = False
+			else:
+				user = User(query[0], query[1], query[2], query[3])
+				session['userName'] = user.firstname
+				session['email'] = user.email
+				session['role'] = user.role.value
 	#Session Check
 	if 'userName' in session:
 		sessionUser = [session['userName'], session['email'], session['role']]
 	else:
 		sessionUser=['','']
-	return render_template('index.html', sessionUser=sessionUser, attempted=attempted)
+	return render_template('index.html', sessionUser=sessionUser, attempted=attempted, deactivated=deactivated)
 
 @app.route('/logout')
 def logout():
@@ -77,7 +83,7 @@ def importPage():
 #Displays the Invoice page to create and displays invoices	
 @app.route('/invoice')
 def invoicePage():
-	count = 0;
+	count = 0
 	# 
 	if request.method == 'GET':
 		count = pg.countInvoices()
@@ -133,6 +139,7 @@ def invCreatePage():
 		print(inv_file_data)
 		print(todays_date)
 	return render_template('invCreate.html', inv_alert=inv_alert, invoiceNumber=invoiceNumber, inv_file_data=inv_file_data, todays_date=todays_date, sessionUser=sessionUser)
+
 # Renders search invoice form/page 
 @app.route('/invSearch', methods=['GET', 'POST'])
 def invDisplayPage():
@@ -149,6 +156,7 @@ def invDisplayPage():
 		end = request.form.get('end')
 		results = pg.invSearch(term, start, end)
 	return render_template('invSearch.html', sessionUser=sessionUser, results=results)
+
 #Displays a Products page to search for the products the company offers.
 @app.route('/products', methods=['GET', 'POST'])
 def productsPage():
@@ -185,8 +193,22 @@ def productsPage():
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString, sessionUser=sessionUser)
 
-#
-@app.route('/accounts')
+# Renders search invoice form/page 
+@app.route('/admin', methods=['GET', 'POST'])
+def adminPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	#check role can access page.
+	if sessionUser[2] == 2:
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	return render_template('admin.html', sessionUser=sessionUser)
+
+# Renders search invoice form/page 
+@app.route('/accounts', methods=['GET', 'POST'])
 def accountsPage():
 	#Session Check
 	if 'userName' in session:
@@ -194,8 +216,139 @@ def accountsPage():
 	else:
 		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	#check role can access page.
+	if sessionUser[2] == 2:
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	accountUpdated = None
+	if request.method == 'POST':
+		#Hidden input formType is either accountCreate or accountEdit
+		formType = request.form['formType']
+		accountUpdated = False
+		print("FormType: " + formType)
+		warehouseForEmp = ""
+		pwd = ""
+		#Attempt account creation.
+		if formType == "accountCreate":
+			firstname=request.form['firstname']
+			lastname=request.form['lastname']
+			email=request.form['email']
+			pwd=request.form['pwd']
+			role=request.form['role']
+			if request.form.get("warehouseForEmp") != None:
+				warehouseForEmp=request.form['warehouseForEmp']
+			newUser = pg.createUser(firstname, lastname, email, pwd, role)
+			if newUser:
+				accountUpdated = True
+				pg.updateWarehouseAssociate(email, warehouseForEmp)
+		elif formType == "accountEdit":
+			accountUpdated = False
+			firstname=request.form['firstname']
+			lastname=request.form['lastname']
+			email=request.form['email']
+			if request.form.get("pwd") != None:
+				pwd=request.form['pwd']
+			role=request.form['role']
+			if request.form.get("warehouseForEmp") != None:
+				warehouseForEmp=request.form['warehouseForEmp']
+			userUpdated = pg.updateUser(firstname, lastname, email, pwd, role)
+			if userUpdated:
+				accountUpdated = True
+				pg.updateWarehouseAssociate(email, warehouseForEmp)
 	userList = pg.listAllUsersWithWarehouses()
-	return render_template('accounts.html', sessionUser=sessionUser, userList=userList)
+	warehouseList = pg.listAllWarehouses()
+	#Add a default to the warehouse list for users without a warehouse.
+	deactivated = ['-1', 'None']
+	warehouseList.insert(0, deactivated)
+	return render_template('accounts.html', sessionUser=sessionUser, userList=userList, warehouseList=warehouseList, accountUpdated=accountUpdated)
+	
+@app.route('/accountCreate')
+def createAccount():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	#check role can access page.
+	if sessionUser[2] == 2:
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	warehouseList = pg.listAllWarehouses()
+	#Add a default to the warehouse list for users without a warehouse.
+	deactivated = ['-1', 'None']
+	warehouseList.insert(0, deactivated)
+	return render_template('accountCreate.html', sessionUser=sessionUser, warehouseList=warehouseList)
+
+@app.route('/accountUpdate', methods=['GET','POST'])
+def accountUpdate():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	#check role can access page.
+	if sessionUser[2] == 2:
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	print(request)
+	user = None
+	if request.method == 'POST':
+		if request.form.get("userToUpdate") != None:
+			email=request.form['userToUpdate']
+			user = pg.listUserandWarehouseByEmail(email)
+	warehouseList = pg.listAllWarehouses()
+	#Add a default to the warehouse list for users without a warehouse.
+	deactivated = ['-1', 'None']
+	warehouseList.insert(0, deactivated)
+	# print("accountUpdated = " + accountUpdated)
+	return render_template('accountEdit.html', sessionUser=sessionUser, user=user, warehouseList=warehouseList)
+
+@app.route('/customers', methods=['GET', 'POST'])
+def customersPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+
+	updateStatus = None
+	if request.method == 'POST' and 'id' in request.form:
+		updateStatus = 'success'
+		try:
+			pg.updateCust(request.form)
+		except Exception as e:
+			print(e)
+			updateStatus = 'failure'
+	if request.method == 'POST' and 'id' not in request.form:
+		updateStatus = 'success'
+		try:
+			pg.createCust(request.form)
+		except Exception as e:
+			print(e)
+			updateStatus = 'failure'
+	custList = pg.getCustomers()
+	return render_template('customers.html', sessionUser=sessionUser, custList=custList, status=updateStatus)
+
+@app.route('/newCust', methods=['GET', 'POST'])
+def newCustPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	return render_template('newCust.html', sessionUser=sessionUser)	
+
+@app.route('/custEdit', methods=['GET', 'POST'])
+def custEditPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	cust = pg.getCust(request.form['id'])
+	return render_template('custEdit.html', sessionUser=sessionUser, c=cust)
 	
 # Returns generated invoice as attachment
 @app.route('/invoices', methods=['GET'])
@@ -205,9 +358,10 @@ def invoiceReturnPage():
 		sessionUser = [session['userName'], session['email'], session['role']]
 	else:
 		sessionUser=['','','']
-		return render_template('invoice.html', sessionUser=sessionUser, attempted=False)
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
 	number = request.args.get('num', default = 1, type = str)
 	extension = request.args.get('ext', default = 1, type = str)
+	print(number, extension)
 	file = "invoices/" + number + extension
 	return send_file(file, as_attachment=True)
 

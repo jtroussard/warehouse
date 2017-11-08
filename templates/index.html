@@ -11,10 +11,6 @@
         <h1 class="mt-5">Log In</h1>
         <form method='POST' action="/">
             <p>Log into your Warehouse Management System account.</p>
-            <!-- TODO: determine if needed: 
-            <div>
-                <input type="hidden" name="formType" value="loginForm">
-            </div> -->
                <div class="form-group">
                 <label class="control-label col-sm-2" for="email">Email:</label>
                 <div class="col-sm-4">
@@ -37,6 +33,11 @@
         {% if attempted %}
             <div class="alert alert-warning" role="alert">
               <strong>Login failed!</strong> Email and Password didn't match! Try again.
+            </div>
+        {% endif %}
+        {% if deactivated %}
+            <div class="alert alert-danger" role="alert">
+              <strong>Login failed!</strong> Your account has been deactivated. Please contact your manager for additional details.
             </div>
         {% endif %}
     
