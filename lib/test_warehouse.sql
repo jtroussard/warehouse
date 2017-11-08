@@ -103,9 +103,10 @@ TO whmanager;
 /* Adding dummy sales person for db testing */
 
 insert into warehouses (associate) values
-('main'),('taylor'),('sam'), ('jacques');
+('main'),('taylor'),('sam'),('jacques');
 
 insert into customers (name, description, address1, city, state, zipcode, contact, phone, email) VALUES
+('George Washington', 'Famous general or something', '100 Charles Street', 'Fredericksburg', 'VA', 22401, 'Contact person', '2019445595', 'g.washington@gmail.com'),
 ('autozone', 'large autoparts dealer', '123 street avenue', 'Fredericksburt', 'VA', 22401, 'harvey wayne', '0123456789', 'email@email.email'),
 ('yates', 'local garage', '456 road blvd', 'Alexandria', 'VA', 22301, 'Bruce Dent', '0123456789', 'email@email.email'),
 ('jiffy lube', 'nationwide garage', '789 lane way', 'Richmond', 'VA', 22501, 'Darius McJohnson', '0123456789', 'email@email.email');
@@ -113,20 +114,32 @@ insert into customers (name, description, address1, city, state, zipcode, contac
 insert into users (email, password, firstname, lastname, role) VALUES
 ('tdohmen@mail.umw.edu', crypt('123', gen_salt('bf')), 'Taylor', 'Dohmen', 0),
 ('smiller@mail.umw.edu', crypt('123', gen_salt('bf')), 'Samantha', 'Miller', 0),
-('jtroussard@mail.umw.edu',  crypt('123', gen_salt('bf')), 'Jacques', 'Troussard', 0);
-
-insert into sales (datesold, seller, customerid) VALUES
-('2017-01-01', 'tdohmen@mail.umw.edu', 1),
-('2017-06-06', 'smiller@mail.umw.edu', 2),
-('2017-11-11', 'jtroussard@mail.umw.edu', 3),
-('2002-04-22', 'tdohmen@mail.umw.edu', 3);
+('jacques.troussard@gmail.com',  crypt('123', gen_salt('bf')), 'Jacques', 'Troussard', 0);
 
 insert into products (pnumber, name, price) values
 ('1', 'blinker fluid', 111.11),
 ('2', 'tire fluid', 222.22),
 ('3', 'airbag fluid', 333.33),
 ('4', 'radio fluid', 444.44),
-('5', 'headrest fluid', 555.55);
+('5', 'headrest fluid', 555.55),
+('PN 208', 'BG 44K Fuel System Cleaner', 9.99),
+('PN 206', 'BG Air Intake System Cleaner', 5.59),
+('PN 203', 'BG CF5', 13.40),
+('PN 20332', 'BG CF5', 27.99),
+('PN 841', 'BG Low Viscosity DOT 4 Brake Fluid', 30);
+
+insert into inventory (productid, warehouseid, quantity) VALUES
+(6, 4, 100),
+(7, 4, 100),
+(8, 4, 100),
+(9, 4, 100),
+(10, 4, 100);
+
+insert into sales (datesold, seller, customerid) VALUES
+('2017-01-01', 'tdohmen@mail.umw.edu', 1),
+('2017-06-06', 'smiller@mail.umw.edu', 2),
+('2017-11-11', 'jacques.troussard@gmail.com', 3),
+('2002-04-22', 'tdohmen@mail.umw.edu', 3);
 
 insert into sold (saleid, productid, quantity) VALUES
 (1, 1, 10),
@@ -139,21 +152,3 @@ insert into sold (saleid, productid, quantity) VALUES
 (3, 4, 1),
 (3, 5, 1),
 (4, 3, 987);
-
-/*
-1.
-get warehouse id associated with sales associate
-select w.id from users u left outer join warehouses w on u.email = w.associate returning w.id
-
-2.
-get qty of product from inventory associated with warehouse id
-select quantity from inventory where productid = ... AND warehouseid = ...;
-
-3.
-server side compare units sold with current stock return result
-- return alert if negative
-	- break
-- return warning if 0 (restock)
-	- process reconcilation
-	- update inventory set quantity = returned result where productid = ...;
-*/
