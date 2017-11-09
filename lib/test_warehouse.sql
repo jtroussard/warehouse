@@ -106,7 +106,8 @@ insert into warehouses (id, associate, tag_number, make, model) VALUES
 (1, 'smiller3@mail.umw.edu', 'BGCVA1', 'Ford', 'E-450'),
 (2, 'tdohmen@mail.umw.edu', 'BGCVA2', 'Ford', 'E-450'),
 (3, 'jacques.troussard@gmail.com', 'BGCVA3', 'Ford', 'E-450'),
-(4, '', 'BGCVA4', 'Ford', 'E-450');
+(4, '', 'BGCVA4', 'Ford', 'E-450'),
+(5, '', 'BGCVA5', 'Ford', 'E-450');
 
 insert into customers (name, description, address1, city, state, zipcode, contact, phone, email) VALUES
 ('George Washington', 'Famous general or something', '100 Charles Street', 'Fredericksburg', 'VA', 22401, 'Contact person', '2019445595', 'g.washington@gmail.com'),
@@ -145,7 +146,7 @@ insert into inventory (productid, warehouseid, quantity) VALUES
 
 insert into sales (datesold, seller, customerid) VALUES
 ('2017-01-01', 'tdohmen@mail.umw.edu', 1),
-('2017-06-06', 'smiller@mail.umw.edu', 2),
+('2017-06-06', 'smiller3@mail.umw.edu', 2),
 ('2017-11-11', 'jacques.troussard@gmail.com', 3),
 ('2002-04-22', 'tdohmen@mail.umw.edu', 3);
 
