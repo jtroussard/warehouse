@@ -105,7 +105,7 @@ insert into warehouses (id, associate, tag_number, make, model) VALUES
 (0, 'Main', 'Main', 'Main', 'Main'),
 (1, 'smiller3@mail.umw.edu', 'BGCVA1', 'Ford', 'E-450'),
 (2, 'tdohmen@mail.umw.edu', 'BGCVA2', 'Ford', 'E-450'),
-(3, 'jacques.troussard@gmail.com', 'BGCVA3', 'Ford', 'E-450');
+(3, 'jacques.troussard@gmail.com', 'BGCVA3', 'Ford', 'E-450'),
 (4, '', 'BGCVA4', 'Ford', 'E-450');
 
 insert into customers (name, description, address1, city, state, zipcode, contact, phone, email) VALUES
