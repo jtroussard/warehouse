@@ -58,7 +58,7 @@ CREATE TABLE customers (
 	address2 TEXT,
 	city TEXT,
 	state TEXT,
-	zipcode INTEGER,
+	zipcode TEXT,
 	phone TEXT,
 	contact TEXT,
 	email text
