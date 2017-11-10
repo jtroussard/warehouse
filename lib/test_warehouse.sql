@@ -101,9 +101,13 @@ GRANT SELECT, UPDATE ON
 TO whmanager;
 
 /* Adding dummy sales person for db testing */
-
-insert into warehouses (associate) values
-('main'),('taylor'),('sam'),('jacques');
+insert into warehouses (id, associate, tag_number, make, model) VALUES 
+(0, 'Main', 'Main', 'Main', 'Main'),
+(1, 'smiller3@mail.umw.edu', 'BGCVA1', 'Ford', 'E-450'),
+(2, 'tdohmen@mail.umw.edu', 'BGCVA2', 'Ford', 'E-450'),
+(3, 'jacques.troussard@gmail.com', 'BGCVA3', 'Ford', 'E-450'),
+(4, '', 'BGCVA4', 'Ford', 'E-450'),
+(5, '', 'BGCVA5', 'Ford', 'E-450');
 
 insert into customers (name, description, address1, city, state, zipcode, contact, phone, email) VALUES
 ('George Washington', 'Famous general or something', '100 Charles Street', 'Fredericksburg', 'VA', 22401, 'Contact person', '2019445595', 'g.washington@gmail.com'),
@@ -113,8 +117,13 @@ insert into customers (name, description, address1, city, state, zipcode, contac
 
 insert into users (email, password, firstname, lastname, role) VALUES
 ('tdohmen@mail.umw.edu', crypt('123', gen_salt('bf')), 'Taylor', 'Dohmen', 0),
-('smiller@mail.umw.edu', crypt('123', gen_salt('bf')), 'Samantha', 'Miller', 0),
+('smiller3@mail.umw.edu', crypt('123', gen_salt('bf')), 'Samantha', 'Miller', 0),
 ('jacques.troussard@gmail.com',  crypt('123', gen_salt('bf')), 'Jacques', 'Troussard', 0);
+
+INSERT INTO users (firstname, lastname, email, password, role) VALUES ('Luke', 'Cage', 'lk@test.com', crypt('123', gen_salt('bf')), 0);
+INSERT INTO users (firstname, lastname, email, password, role) VALUES ('Mariah', 'Dillard', 'md@test.com', crypt('123', gen_salt('bf')), 1);
+INSERT INTO users (firstname, lastname, email, password, role) VALUES ('Jessica', 'Jones', 'jj@test.com', crypt('123', gen_salt('bf')), 2);
+INSERT INTO users (firstname, lastname, email, password, role) VALUES ('Danny', 'Rand', 'dr@test.com', crypt('123', gen_salt('bf')), 3);
 
 insert into products (pnumber, name, price) values
 ('1', 'blinker fluid', 111.11),
@@ -137,7 +146,7 @@ insert into inventory (productid, warehouseid, quantity) VALUES
 
 insert into sales (datesold, seller, customerid) VALUES
 ('2017-01-01', 'tdohmen@mail.umw.edu', 1),
-('2017-06-06', 'smiller@mail.umw.edu', 2),
+('2017-06-06', 'smiller3@mail.umw.edu', 2),
 ('2017-11-11', 'jacques.troussard@gmail.com', 3),
 ('2002-04-22', 'tdohmen@mail.umw.edu', 3);
 
