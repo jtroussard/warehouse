@@ -49,8 +49,6 @@ def makeInvoice(invoice_data, invoice_number, date): # invoice_name - list of di
     cust_city = customer['city']
     cust_stat = customer['state']
     cust_zipc = customer['zipcode']
-    print("++++++++++++++++++")
-    print(customer['phone'])
     if customer['phone'] and len(str(customer['phone'])) == 10:
         cust_phne = "({}){}-{}".format(str(customer['phone'][0:3]),str(customer['phone'][3:6]),str(customer['phone'][6:10]))
     elif customer['phone'] and len(str(customer['phone'])) == 11:
