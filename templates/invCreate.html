@@ -17,6 +17,7 @@
         {% elif inv_alert == "failed" %}
           <div class="alert alert-warning" role="alert">
             <strong>Failed!</strong> Something went wrong and invoice was not created.
+            <div id="error_message">{{ message }}</div>
           </div>
         {% endif %}
       </div>
