@@ -3,6 +3,7 @@
 import psycopg2
 import psycopg2.extras
 from lib import tools as tl
+from flask import Markup
 
 from lib.config import *
 
@@ -115,7 +116,10 @@ def makeSale(invoiceData):
 	saleData = [invoiceData[0]['date'], invoiceData[0]['seller'], invoiceData[0]['customer']]
 	query_string = "INSERT INTO sales (datesold, seller, customerid) VALUES (%s, %s, %s) RETURNING id;"
 	results = execute_query(query_string, conn, select=True, args=(tuple(saleData)))
-	invoiceNumber = results[0][0]
+	if results:
+		invoiceNumber = results[0][0]
+	else:
+		return -1
 	
 	# Insert sold rows
 	line_item_count = len(invoiceData[0]["products[]"])
@@ -154,7 +158,8 @@ def getProductName(part_number):
 	results = execute_query(query_string, conn, select=True, args=(part_number,))
 	return results[0]
 	
-def getProductId(part_number, conn):
+def getProductId(part_number, conn=None):
+	conn = connectToPostgres()
 	if conn == None:
 		return None	
 	query_string = "SELECT id FROM products WHERE pnumber = %s;"
@@ -332,3 +337,69 @@ def createCust(data):
 		data['email'])
 	execute_query(query, db, False, args)
 	db.close()
+	
+def getWarehouse(associate):
+	db = connectToPostgres()
+	query = 'SELECT w.id from warehouses w inner join users u on w.associate = u.email where u.email = %s';
+	result = execute_query(query, db, True, (associate,))
+	db.close()
+	if len(result) == 1:
+		return result[0][0]
+	else:
+		print("===ERROR===\n  Warehouse id selection error")
+		return -1
+		
+def getWhouseQty(product_id, warehosue_id):
+	db = connectToPostgres()
+	query = 'SELECT quantity FROM inventory WHERE warehouseid = %s AND productid = %s';
+	result = execute_query(query, db, True, (associate,))
+	db.close()
+	if len(result) == 1:
+		return result[0][0]
+	else:
+		print("===ERROR===\n  Inventory qty retrieval error")
+		return -1
+		
+def reconcile(product_id, warehouse_id, qty_sold):
+	print("PASSED INTO QUERY (reconcile) {}".format(product_id))
+	db = connectToPostgres()
+	query = 'SELECT quantity FROM inventory WHERE warehouseid = %s AND productid = %s';
+	result = execute_query(query, db, True, (warehouse_id, product_id))
+	if len(result) == 1: # check for return
+		if int(qty_sold) < int(result[0][0]):
+			balance =  int(result[0][0]) - int(qty_sold)
+			query = 'UPDATE inventory SET quantity = %s WHERE warehouseid = %s AND productid = %s';
+			args = (balance, warehouse_id, product_id)
+			execute_query(query, db, False, args)
+			db.close()
+			return True
+		else:
+			db.close()
+			return False
+	
+def checkSaleIntegrity(product_num, warehouse_id, qty_sold):
+	product_id = getProductId(product_num)
+	db = connectToPostgres()
+	query = 'SELECT quantity FROM inventory WHERE warehouseid = %s AND productid = %s';
+	result = execute_query(query, db, True, (warehouse_id, product_id))
+	db.close()
+	# YOU SHALL NOT PASS --- MAYBE
+	if len(result) < 1: # check for return
+		if product_id < 0: # bad product number
+			product_id = "Unknown"
+			message = Markup("<br><p><strong>ErrorType:</strong> Query Fault<br><strong>Warehouse:</strong> {}<br><strong>ProductNum:</strong> {}</p><p>Database unchanged.</p>".format(warehouse_id, product_id))
+			return message
+		if warehouse_id < 0: # bad seller info
+			warehouse_id = "Unknown"
+			message = Markup("<br><p><strong>ErrorType:</strong> Query Fault<br><strong>Warehouse:</strong> {}<br><strong>ProductNum:</strong> {}</p><p>Database unchanged.</p>".format(warehouse_id, product_id))
+			return message
+	if int(qty_sold) < 0:
+		message = Markup("<br><p><strong>ErrorType:</strong> Negative Qty<br><strong>Warehouse:</strong> {}<br><strong>ProductNum:</strong> {}</p><p>Database unchanged.</p>".format(warehouse_id, product_id))
+		return message
+	if int(qty_sold) > int(result[0][0]):
+		message = Markup("<br><p><strong>ErrorType:</strong> Insufficient Inventory<br><strong>Warehouse:</strong> {}<br><strong>ProductNum:</strong> {}</p><p>Database unchanged.</p>".format(warehouse_id, product_id))
+		return message
+	# YOU SHALL PASS!!!
+	return "good"
+	
+	

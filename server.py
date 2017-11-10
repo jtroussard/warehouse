@@ -104,6 +104,7 @@ def invCreatePage():
 	invoice_doc = None
 	inv_file_data = []
 	todays_date = strftime("%a, %d %b %Y")
+	message = "Default Message"
 	#Session Check
 	if 'userName' in session:
 		sessionUser = [session['userName'], session['email'], session['role']]
@@ -123,22 +124,36 @@ def invCreatePage():
 		invoiceData.append({'customer':request.form['customer'], 
 		'seller':request.form['seller'], 'date':todays_date,
 		'products[]':request.form.getlist('products[]'), 'qtys[]':request.form.getlist('qtys[]')})
-		invoiceNumber = pg.makeSale(invoiceData)
-		if (invoiceNumber > 0):
-			# Create invoice doc
-			invoice_doc = invoice_factory.makeInvoice(invoiceData, invoiceNumber, todays_date)
-			inv_file_data = invoice_doc
-			if invoice_doc:
-				inv_alert = "success"
+		warehouse_id = pg.getWarehouse(invoiceData[0]['seller'])
+		flag = True
+		for p in invoiceData[0]['products[]']:
+			for q in invoiceData[0]['qtys[]']:
+				if pg.checkSaleIntegrity(p, warehouse_id, q) != "good":
+					flag = False
+					message = pg.checkSaleIntegrity(p, warehouse_id, q)
+					break
+		if flag:
+			for p in invoiceData[0]['products[]']:
+				for q in invoiceData[0]['qtys[]']:
+					if pg.reconcile(pg.getProductId(p), warehouse_id, q):
+						print("Inventory Updated")
+					else:
+						print("===ERROR===\nInventory Update Failed.")
+			invoiceNumber = pg.makeSale(invoiceData)
+			if (invoiceNumber > 0):
+				# Create invoice doc
+				invoice_doc = invoice_factory.makeInvoice(invoiceData, invoiceNumber, todays_date)
+				inv_file_data = invoice_doc
+				if invoice_doc:
+					inv_alert = "success"
+				else:
+					inv_alert = "failed" # On creation - see makeInvoice
 			else:
-				inv_alert = "failed" # On creation - see makeInvoice
+				inv_alert = "failed" # On number generation - see makeSale
 		else:
-			inv_alert = "failed" # On number generation - see makeSale
-		print(inv_alert)
-		print(invoiceNumber)
-		print(inv_file_data)
-		print(todays_date)
-	return render_template('invCreate.html', inv_alert=inv_alert, invoiceNumber=invoiceNumber, inv_file_data=inv_file_data, todays_date=todays_date, sessionUser=sessionUser)
+			inv_alert = "failed"
+			
+	return render_template('invCreate.html', inv_alert=inv_alert, message=message, invoiceNumber=invoiceNumber, inv_file_data=inv_file_data, todays_date=todays_date, sessionUser=sessionUser)
 
 # Renders search invoice form/page 
 @app.route('/invSearch', methods=['GET', 'POST'])
