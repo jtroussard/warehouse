@@ -1,6 +1,22 @@
 # TODO
-Improve invoice alert to specifically identify the following input errors
-- product id does not exist (recognized by getProductId returning -1)
+## Required
++  ~~Create SQL Schema~~
++  ~~Outline front end (bootstrap)~~
++  ~~Create login/logout~~
++  ~~Create import~~
++  ~~Create product search~~
++  ~~Create customer page~~
++  ~~Create invoice page~~
++  ~~Search invoice page~~
+## Testing/Feedback
++  Create invoice - add customer by name not id.sl
+## Nice-To-Have
++  Aesthetics/theme
++  Add typeahead suggestion feature to entire site.
++  ~~Improve invoice alert to specifically identify the following input errors~~
++  Implement paging for large search results for products and customers
++  ~~Update warehouse information via web app (opposed to only add/mod via file import)~~
++  ~~Downloadable links when searching for invoices~~
 
 
 # Warehouse Management System
@@ -419,9 +435,15 @@ Advanced User Accounts - 2 days
 
 ### 3.3 Work Breakdown Structure
 
-### 3.4 Gannt Chart -taylor
+<see original document>
 
-### 3.5 Task Dependency Diagram -taylor
+### 3.4 Gannt Chart 
+
+<see original document>
+
+### 3.5 Task Dependency Diagram 
+
+<see original document>
 
 ## Appendix A. Glossary
 
@@ -453,57 +475,11 @@ value of 0.) |
 
 B.2 Invoice Example
 
-Below captures the text file created from the system when a sale is made.
-
-Business Name
-
-123 Example Dr.
-
-Ashland, VA 23005
-
-&lt;phone number&gt;
-
-&lt;email&gt;
-
-To:
-
-Business Name
-
-123 Example Dr.
-
-Ashland, VA 23005
-
-Cc. Manager Name
-
-&lt;BG Distributive Group Company Name&gt; Invoice
-
-Invoice Number: ##
-
-Date: mm-dd-yyyy
-
-Product Name                        Qty        Price                Product
-Number                Total Amount
-
-Test 1    1 $56.00  10100    $56.00
-
-Test 2    3 $15.00  16534    $45.00
-
-Total           $101
+<see original document>
 
 ## Appendix C. Document Contributions
 
-This appendix lists each group member&#39;s document contributions.
-
-- Samantha Miller
-  - Wrote the Section 1: Introduction.
-  - Wrote Section 2.2 User Characteristics and requirements  2.3.1 through
-    2.3.3.
-  - Created System Documents B.1 and B.2.
-  
-- Jacques Troussard
-  - Wrote requirements 2.3.7 through 2.3.10
-  - Wrote Section 2.4 Constraints
-  - Created work breakdown graph
+<see original document>
 
 
 
