@@ -1,11 +1,13 @@
 # TODO
 ## Required
 +  ~~Create SQL Schema~~
++  ~~Set up devenvironment~~
 +  ~~Outline front end (bootstrap)~~
-+  ~~Create login/logout~~
-+  ~~Create import~~
-+  ~~Create product search~~
-+  ~~Create customer page~~
++  ~~Create basic user page~~
++  ~~Create login/logout functionality~~
++  ~~Create import page~~
++  ~~Create product search page~~
++  ~~Create customer management page~~
 +  ~~Create invoice page~~
 +  ~~Search invoice page~~
 ## Testing/Feedback
