@@ -435,15 +435,15 @@ Advanced User Accounts - 2 days
 
 ### 3.3 Work Breakdown Structure
 
-<see original document>
+(see original document)
 
 ### 3.4 Gannt Chart 
 
-<see original document>
+(see original document)
 
 ### 3.5 Task Dependency Diagram 
 
-<see original document>
+(see original document)
 
 ## Appendix A. Glossary
 
@@ -475,11 +475,11 @@ value of 0.) |
 
 B.2 Invoice Example
 
-<see original document>
+(see original document)
 
 ## Appendix C. Document Contributions
 
-<see original document>
+(see original document)
 
 
 
