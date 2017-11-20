@@ -386,6 +386,44 @@ def invoiceReturnPage():
 	file = "invoices/" + number + extension
 	return send_file(file, as_attachment=True)
 
+# Renders search invoice form/page 
+@app.route('/warehouses', methods=['GET', 'POST'])
+def warehousesPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	#check role can access page.
+	if sessionUser[2] == 2:
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	if request.method == 'POST':
+		#Hidden input formType is either accountCreate or accountEdit
+		formType = request.form['formType']
+		#Attempt account creation.
+		if formType == "warehouseCreate":
+			make=request.form['make']
+			model=request.form['model']
+			tagNumber=request.form['tagNumber']
+			pg.createWarehouse(make, model, tagNumber)
+	warehouseList = pg.listAllWarehousesWithUsers()
+	print(warehouseList)
+	return render_template('warehouses.html', sessionUser=sessionUser, warehouseList=warehouseList)
+	
+@app.route('/warehouseCreate')
+def warehouseCreate():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	#check role can access page.
+	if sessionUser[2] == 2:
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	return render_template('warehouseCreate.html', sessionUser=sessionUser)
+
 # start the server
 if __name__ == '__main__':
 	#app.run( host='0.0.0.0', port=80, debug=True) #For prod environment

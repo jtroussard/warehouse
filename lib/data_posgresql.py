@@ -226,7 +226,18 @@ def listAllWarehouses():
   result = execute_query(query_string, conn)
   conn.close()
   return result
+
+#Selects a list of warehosues with users.
+def listAllWarehousesWithUsers():
+  conn = connectToPostgres()
+  if conn == None:
+    return None
+  query_string = "SELECT id, make, model, tag_number, associate from warehouses ORDER BY id;"
+  result = execute_query(query_string, conn)
+  conn.close()
+  return result
  
+#Creates a new system user. 
 def createUser(firstname, lastname, email, password, role):
 	conn = connectToPostgres()
 	if conn == None:
@@ -277,6 +288,15 @@ def updateWarehouseAssociate(email, id):
   	query_string = "UPDATE warehouses SET associate=%s where id=%s;"
   	execute_query(query_string, conn, select=False, args=(email, id,))
   conn.close()
+
+#Creates a new warehouse.
+def createWarehouse(make, model, tagNumber):
+	conn = connectToPostgres()
+	if conn == None:
+	  return None
+	insert_user = "INSERT INTO warehouses (make, model, tag_number) VALUES (%s, %s, %s);"
+	execute_query(insert_user, conn, select=False, args=(make, model, tagNumber))
+	conn.close()
 
 
 def getCustomers():

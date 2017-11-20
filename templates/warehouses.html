@@ -1,0 +1,43 @@
+{% extends "layout.html" %} {% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1 class="mt-5">Warehouses</h1>
+      <p class="lead">Display and create warehouses for the Warehouse Management System. Associates may be updated on the Accounts page.</p>
+      <div class="newWarehouse">
+        <a type="button" class="btn btn-primary" href="/warehouseCreate" role="button">Create New Warehouse</a>
+      </div>
+      <br />
+      <div class="currentwarehouses">
+        <h2>Current Warehouses</h2>
+        {% if warehouseList != None and warehouseList|length > 0 %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Warehouse Id</th>
+              <th>Make</th>
+              <th>Model</th>
+              <th>Tag Number</th>
+              <th>Associate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for w in warehouseList %}
+            <tr>
+              <td>{{w.id}}</td>
+              <td>{{w.make}}</td>
+              <td>{{w.model}}</td>
+              <td>{{w.tag_number}}</td>
+              <td>{{w.associate}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>No  warehouses found.</p>
+        {% endif %}
+      </div>
+      <!--end currentWarehouses div-->
+    </div>
+    <!-- end div container-->
+    {% endblock %}

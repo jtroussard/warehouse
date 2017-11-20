@@ -1,0 +1,31 @@
+{% extends "layout.html" %} {% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1 class="mt-5">Create a Warehouse</h1>
+      <p class="lead">Provide the fields below to create a new warehouse.</p>
+      <form class="form" method="POST" action="/warehouses">
+          <input type="hidden" name="formType" value="warehouseCreate"\>
+          <div class="form-group">
+            <label for="make" class="control-label col-sm-2">Make:</label>
+            <input type="text" class="col-sm-4" name="make" placeholder="Make" maxlength="50" required>
+          </div>
+          <div class="form-group">
+            <label for="model" class="control-label col-sm-2">Model:</label>
+            <input type="text" class="col-sm-4" name="model" placeholder="Model" maxlength="50" required>
+          </div>
+          <div class="form-group">
+            <label for="tagNumber" class="control-label col-sm-2">Tag Number:</label>
+            <input type="text" class="col-sm-4" name="tagNumber" placeholder="Tag Number" maxlength="50" required>
+          </div>
+        <div class="row">
+          <a type="button" class="btn btn-default"  href="/warehouses" role="button">Cancel</a>
+          &nbsp;
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>
+  <!-- end div container-->
+  {% endblock %}
