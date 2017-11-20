@@ -190,6 +190,8 @@ def productsPage():
 			pname=request.form['productName']
 		if request.form.get("warehouse") != None:
 			warehouse=request.form['warehouse']
+			if warehouse == "-1":
+				warehouse = ""
 		#Concatinate search details
 		if pnumber != "":
 			searchString += "Product number: " + pnumber + " "
@@ -206,7 +208,11 @@ def productsPage():
 	else:
 		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
-	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString, sessionUser=sessionUser)
+	warehouseList = pg.listAllWarehouses()
+	#Add a default to the warehouse list for users without a warehouse.
+	deactivated = ['-1', 'None']
+	warehouseList.insert(0, None)
+	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString, warehouseList=warehouseList, sessionUser=sessionUser)
 
 # Renders search invoice form/page 
 @app.route('/admin', methods=['GET', 'POST'])
