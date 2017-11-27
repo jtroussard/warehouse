@@ -19,7 +19,15 @@
           </div>
           <div class="form-group">
             <div class="col-sm-2">
-              <input type="number" min=1 class="form-control" name="warehouse" id="warehouse" placeholder="Warehouse ID" maxlength="5">
+            <select class="form-control" name="warehouse">
+              {% for w in warehouseList %}
+                {% if w != None %}
+                  <option value="{{w.id}}">{{w.id}} {{w.tag_number}} {{w.make}} {{w.model}}</option>
+                {% else %}
+                  <option value="-1">All Warehouses</option>
+                {% endif %}
+              {% endfor %}
+            </select>
             </div>
           </div>
           <!--<div class="row">

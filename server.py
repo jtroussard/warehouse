@@ -104,6 +104,7 @@ def invCreatePage():
 	invoice_doc = None
 	inv_file_data = []
 	todays_date = strftime("%a, %d %b %Y")
+	message = "Default Message"
 	#Session Check
 	if 'userName' in session:
 		sessionUser = [session['userName'], session['email'], session['role']]
@@ -123,22 +124,36 @@ def invCreatePage():
 		invoiceData.append({'customer':request.form['customer'], 
 		'seller':request.form['seller'], 'date':todays_date,
 		'products[]':request.form.getlist('products[]'), 'qtys[]':request.form.getlist('qtys[]')})
-		invoiceNumber = pg.makeSale(invoiceData)
-		if (invoiceNumber > 0):
-			# Create invoice doc
-			invoice_doc = invoice_factory.makeInvoice(invoiceData, invoiceNumber, todays_date)
-			inv_file_data = invoice_doc
-			if invoice_doc:
-				inv_alert = "success"
+		warehouse_id = pg.getWarehouse(invoiceData[0]['seller'])
+		flag = True
+		for p in invoiceData[0]['products[]']:
+			for q in invoiceData[0]['qtys[]']:
+				if pg.checkSaleIntegrity(p, warehouse_id, q) != "good":
+					flag = False
+					message = pg.checkSaleIntegrity(p, warehouse_id, q)
+					break
+		if flag:
+			for p in invoiceData[0]['products[]']:
+				for q in invoiceData[0]['qtys[]']:
+					if pg.reconcile(pg.getProductId(p), warehouse_id, q):
+						print("Inventory Updated")
+					else:
+						print("===ERROR===\nInventory Update Failed.")
+			invoiceNumber = pg.makeSale(invoiceData)
+			if (invoiceNumber > 0):
+				# Create invoice doc
+				invoice_doc = invoice_factory.makeInvoice(invoiceData, invoiceNumber, todays_date)
+				inv_file_data = invoice_doc
+				if invoice_doc:
+					inv_alert = "success"
+				else:
+					inv_alert = "failed" # On creation - see makeInvoice
 			else:
-				inv_alert = "failed" # On creation - see makeInvoice
+				inv_alert = "failed" # On number generation - see makeSale
 		else:
-			inv_alert = "failed" # On number generation - see makeSale
-		print(inv_alert)
-		print(invoiceNumber)
-		print(inv_file_data)
-		print(todays_date)
-	return render_template('invCreate.html', inv_alert=inv_alert, invoiceNumber=invoiceNumber, inv_file_data=inv_file_data, todays_date=todays_date, sessionUser=sessionUser)
+			inv_alert = "failed"
+			
+	return render_template('invCreate.html', inv_alert=inv_alert, message=message, invoiceNumber=invoiceNumber, inv_file_data=inv_file_data, todays_date=todays_date, sessionUser=sessionUser)
 
 # Renders search invoice form/page 
 @app.route('/invSearch', methods=['GET', 'POST'])
@@ -175,6 +190,8 @@ def productsPage():
 			pname=request.form['productName']
 		if request.form.get("warehouse") != None:
 			warehouse=request.form['warehouse']
+			if warehouse == "-1":
+				warehouse = ""
 		#Concatinate search details
 		if pnumber != "":
 			searchString += "Product number: " + pnumber + " "
@@ -191,7 +208,11 @@ def productsPage():
 	else:
 		sessionUser=['','','']
 		return render_template('index.html', sessionUser=sessionUser, attempted=False)
-	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString, sessionUser=sessionUser)
+	warehouseList = pg.listAllWarehouses()
+	#Add a default to the warehouse list for users without a warehouse.
+	deactivated = ['-1', 'None']
+	warehouseList.insert(0, None)
+	return render_template('products.html', results=results, isSearching=isSearching, searchString=searchString, warehouseList=warehouseList, sessionUser=sessionUser)
 
 # Renders search invoice form/page 
 @app.route('/admin', methods=['GET', 'POST'])
@@ -364,6 +385,44 @@ def invoiceReturnPage():
 	print(number, extension)
 	file = "invoices/" + number + extension
 	return send_file(file, as_attachment=True)
+
+# Renders search invoice form/page 
+@app.route('/warehouses', methods=['GET', 'POST'])
+def warehousesPage():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	#check role can access page.
+	if sessionUser[2] == 2:
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	if request.method == 'POST':
+		#Hidden input formType is either accountCreate or accountEdit
+		formType = request.form['formType']
+		#Attempt account creation.
+		if formType == "warehouseCreate":
+			make=request.form['make']
+			model=request.form['model']
+			tagNumber=request.form['tagNumber']
+			pg.createWarehouse(make, model, tagNumber)
+	warehouseList = pg.listAllWarehousesWithUsers()
+	print(warehouseList)
+	return render_template('warehouses.html', sessionUser=sessionUser, warehouseList=warehouseList)
+	
+@app.route('/warehouseCreate')
+def warehouseCreate():
+	#Session Check
+	if 'userName' in session:
+		sessionUser = [session['userName'], session['email'], session['role']]
+	else:
+		sessionUser=['','','']
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	#check role can access page.
+	if sessionUser[2] == 2:
+		return render_template('index.html', sessionUser=sessionUser, attempted=False)
+	return render_template('warehouseCreate.html', sessionUser=sessionUser)
 
 # start the server
 if __name__ == '__main__':

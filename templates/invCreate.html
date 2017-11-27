@@ -17,6 +17,7 @@
         {% elif inv_alert == "failed" %}
           <div class="alert alert-warning" role="alert">
             <strong>Failed!</strong> Something went wrong and invoice was not created.
+            <div id="error_message">{{ message }}</div>
           </div>
         {% endif %}
       </div>
@@ -40,15 +41,15 @@
 <div id="line_items" name="lines[]">
   <div class="row" line=1 id="line_1">
         <div class="col-md-9 mb-3">
-          <label for="validationDefault04">Product ID</label>
-          <input class="form-control" name="products[]" placeholder="" required="" type="text">
+          <label for="validationDefault04">Product Part Number</label>
+          <input id="1_product" class="form-control" name="products[]" placeholder="" required="" type="text">
           <div class="invalid-feedback">
             Please provide product part number.
           </div>
         </div>
         <div class="col-md-3 mb-3">
           <label for="validationDefault05">Qty</label>
-          <input class="form-control" id="qty" name="qtys[]" placeholder="" required="" type="number">
+          <input id="1_quantity" class="form-control" name="qtys[]" placeholder="" required="" type="number">
           <div class="invalid-feedback">
             Please provide quantity.
           </div>

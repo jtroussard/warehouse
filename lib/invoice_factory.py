@@ -10,6 +10,7 @@ __author__     = "Jacques Troussard"
 __date__       = "Sun Oct 29 2017"
 
 def makeInvoice(invoice_data, invoice_number, date): # invoice_name - list of dicts where dict is line
+    print("INVOICE DATA --- {}".format(invoice_data))
     result = None # Return value for validation PRINTED INVOICE NUMBER (FILENAME)
     invoice_directory = "invoices/"
     file_name = "{}".format(str(invoice_number))
@@ -25,7 +26,7 @@ def makeInvoice(invoice_data, invoice_number, date): # invoice_name - list of di
     # - Paper width in monospaced size 12 font = 75
     
     # This can be moved in a configuration file later on
-    vendor_name = "Business Name"
+    vendor_name = "BGCVA"
     vendor_adr1 = "123 Main Street"
     vendor_adr2 = ""
     vendor_city = "Ashland"
@@ -33,21 +34,31 @@ def makeInvoice(invoice_data, invoice_number, date): # invoice_name - list of di
     vendor_vipc = 23005
     vendor_phon = 560555555
     vendor_csz = vendor_city + ", " + vendor_stat + " " + str(vendor_vipc)
-    
     # DO NOT CHANGE ORDER
     vendor_details = [vendor_name, vendor_adr1, vendor_adr2, vendor_csz, vendor_phon]
     
-    # Additional customer details need to banked in db
-    cust_bizn = "Customer Business Name" # is_business boolean - can we add to db
-    cust_name = invoice_data[0]['customer']
-    cust_addr = "456 Customer Lane" # Issue cust data comes from where? User Input?
-    cust_city = "Fredericksburg"
-    cust_stat = "VA"
-    cust_zipc = 22401
+    customer = pg.getCust(invoice_data[0]['customer'])
+    cust_name = customer['name'] # is_business boolean - can we add to db
+    cust_adr1 = customer['address1']
+    cust_adr2 = customer['address2']
+    if cust_adr2:
+        if len(cust_adr2) > 1:
+            cust_addr = cust_adr1 + "\n" + cust_adr2
+    else:
+        cust_addr = cust_adr1
+    cust_city = customer['city']
+    cust_stat = customer['state']
+    cust_zipc = customer['zipcode']
+    if customer['phone'] and len(str(customer['phone'])) == 10:
+        cust_phne = "({}){}-{}".format(str(customer['phone'][0:3]),str(customer['phone'][3:6]),str(customer['phone'][6:10]))
+    elif customer['phone'] and len(str(customer['phone'])) == 11:
+        cust_phne = "1({}){}-{}".format(str(customer['phone'][1:4]),str(customer['phone'][4:7]),str(customer['phone'][7:11]))
+    else:
+        cust_phne = customer['phone']
     cust_csz = cust_city + ", " + cust_stat + " " + str(cust_zipc)
-    cust_details = [cust_bizn, cust_name, cust_addr, cust_csz]
+    cust_details = [cust_name, cust_addr, cust_csz, cust_phne]
     
-    invoice_header = "<BG Distributive Group Company Name> INVOICE"
+    invoice_header = "INVOICE"
     todays_date = date
     table_header = "product name             part number           qty    price    total amount" # 75 characters long
     
