@@ -10,11 +10,11 @@ To retrieve the source code for the application run
 
 To install the required python packages run
 
-```pip3 install flask```
+```sudo pip3 install flask```
 
-```pip3 install psycopg2```
+```sudo pip3 install psycopg2```
 
-```pip3 install tabulate```
+```sudo pip3 install tabulate```
 
 At this point all required software should be installed. To initialize the database schema source the file lib/warehouse.sql in postgres.
 Now everything the application needs to run should be set up. To run the application use the command
