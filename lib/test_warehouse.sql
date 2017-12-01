@@ -120,7 +120,7 @@ insert into users (email, password, firstname, lastname, role) VALUES
 ('smiller3@mail.umw.edu', crypt('123', gen_salt('bf')), 'Samantha', 'Miller', 0),
 ('jacques.troussard@gmail.com',  crypt('123', gen_salt('bf')), 'Jacques', 'Troussard', 0);
 
-INSERT INTO users (firstname, lastname, email, password, role) VALUES ('Luke', 'Cage', 'lk@test.com', crypt('123', gen_salt('bf')), 0);
+INSERT INTO users (firstname, lastname, email, password, role) VALUES ('Luke', 'Cage', 'lc@test.com', crypt('123', gen_salt('bf')), 0);
 INSERT INTO users (firstname, lastname, email, password, role) VALUES ('Mariah', 'Dillard', 'md@test.com', crypt('123', gen_salt('bf')), 1);
 INSERT INTO users (firstname, lastname, email, password, role) VALUES ('Jessica', 'Jones', 'jj@test.com', crypt('123', gen_salt('bf')), 2);
 INSERT INTO users (firstname, lastname, email, password, role) VALUES ('Danny', 'Rand', 'dr@test.com', crypt('123', gen_salt('bf')), 3);
